@@ -24,26 +24,17 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        automaticallyImplyLeading: true,
         backgroundColor: CupertinoColors.link,
         title: Text(
           'Trip Expenses',
-          style: TextStyle(color: Colors.white,fontSize: 24),
+          style: TextStyle(color: Colors.black,fontSize: 24,fontWeight: FontWeight.w600),
         ),
       ),
       body: Column(
         children: [
           _headerOfPage(),
           _tabBarButtons(),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                Center(child: Text('payments are hear')),
-                Center(child: Text('Settle Up is hear')),
-              ]
-            ),
-          )
+          _mainContent(),
         ],
       ),
     );
@@ -129,6 +120,172 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
         labelColor: Colors.white,
         unselectedLabelColor: Colors.black,
       ),
+    );
+  }
+
+  Widget _mainContent(){
+    return Expanded(
+      child: TabBarView(
+        controller: _tabController,
+        children: [
+          Column(
+            children: [
+              //message part
+              Expanded(
+                child: Column(
+                  children: [],
+                ),
+              ),
+              _footerPart(),
+            ],
+          ),
+          Center(child: Text('Settle Up is hear')),
+        ]
+      ),
+    );
+  }
+
+  Widget _footerPart() {
+    List<String> selectedPersons = ['John','Alex'];
+    List<String> allPersons = ['John', 'Mary', 'Alex', 'Sara', 'Mike'];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: CupertinoColors.link,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            //top part of footer
+            TextFormField(
+              cursorColor: Colors.white,
+              cursorRadius: Radius.circular(20),
+              style: TextStyle(
+                color: Colors.white,
+              ),
+              decoration: InputDecoration(
+                  hintText: 'Enter Your Description',
+                  hintTextDirection: TextDirection.ltr,
+                  hintStyle: TextStyle(color: Colors.white60),
+                  filled: true,
+                  fillColor: CupertinoColors.link,
+                  border: OutlineInputBorder(borderSide: BorderSide.none)
+              ),
+            ),
+
+            //bottom part of footer
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                //select user
+                CircleAvatar(
+                  backgroundColor: Colors.black87,
+                  child: Icon(Icons.person, color: Colors.white,),
+                ),
+
+                //amount section
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      cursorHeight: 20,
+                      style: TextStyle(fontSize: 10, color: Colors.white),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        hintText: 'Amount...',
+                        hintStyle: TextStyle(fontSize: 14, color: Colors.white54),
+                        border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(40))),
+                        filled: true,
+                        fillColor: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Split expense button
+                InkWell(
+                  onTap: () {
+                    _showPersonSelectionDialog(context,allPersons,['John']);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.people, color: Colors.white, size: 18),
+                        SizedBox(width: 4),
+                        Text(
+                          'Split',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //person selection dialog
+  void _showPersonSelectionDialog(BuildContext context, List<String> allPersons, List<String> selectedPersons) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Split with'),
+              content: Container(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allPersons.length,
+                  itemBuilder: (context, index) {
+                    final person = allPersons[index];
+                    final isSelected = selectedPersons.contains(person);
+                    return CheckboxListTile(
+                      title: Text(person),
+                      value: isSelected,
+                      onChanged: (bool? value) {
+                        if (value == true) {
+                          selectedPersons.add(person);
+                        } else {
+                          selectedPersons.remove(person);
+                        }
+                        setState(() {});
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop(selectedPersons);
+                  },
+                ),
+              ],
+            );
+          }
+        );
+      },
     );
   }
 }
