@@ -14,7 +14,11 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   late TabController _tabController;
   late ApiService api ;
 
+  //from api
   late Map<String,dynamic> _tripInformation;
+
+  TextEditingController _tripDescriptionController = TextEditingController();
+  TextEditingController _tripAmountController = TextEditingController();
 
   Future<void> fetchTripInfo() async{
     final info = await api.getTripInfo('67dd6c7a35ddea5245fdca02');
@@ -23,6 +27,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
     });
     print(_tripInformation);
   }
+
 
   @override
   void initState() {
@@ -174,6 +179,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
           children: [
             //top part of footer
             TextFormField(
+              controller: _tripDescriptionController,
               cursorColor: Colors.white,
               cursorRadius: Radius.circular(20),
               style: TextStyle(
@@ -209,6 +215,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      controller: _tripAmountController,
                       cursorColor: Colors.white,
                       cursorRadius: Radius.circular(20),
                       cursorHeight: 20,
@@ -270,9 +277,9 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                 width: double.maxFinite,
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: allPersons.length,
+                  itemCount: _tripInformation['members'].length,
                   itemBuilder: (context, index) {
-                    final person = allPersons[index];
+                    final person = _tripInformation['members'][index];
                     final isSelected = selectedPersons.contains(person);
                     return CheckboxListTile(
                       title: Text(person),
@@ -309,6 +316,4 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
       },
     );
   }
-
-
 }
