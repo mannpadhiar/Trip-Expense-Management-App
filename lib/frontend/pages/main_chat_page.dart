@@ -1,3 +1,4 @@
+import 'package:expances_management_app/backend/api_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,13 +12,25 @@ class MainChatPage extends StatefulWidget {
 class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderStateMixin {
 
   late TabController _tabController;
+  late ApiService api ;
+
+  late List<Map<String,dynamic>> _tripInformation;
+
+  Future<void> fetchTripInfo() async{
+    final info = await api.getTripInfo('67dd6c7a35ddea5245fdca02');
+    setState(() {
+      _tripInformation = info;
+    });
+    print(_tripInformation);
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
+    api = ApiService();
+    fetchTripInfo();
   }
 
   @override
