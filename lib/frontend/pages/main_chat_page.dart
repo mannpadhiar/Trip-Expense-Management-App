@@ -14,7 +14,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   late TabController _tabController;
   late ApiService api ;
 
-  late List<Map<String,dynamic>> _tripInformation;
+  late Map<String,dynamic> _tripInformation;
 
   Future<void> fetchTripInfo() async{
     final info = await api.getTripInfo('67dd6c7a35ddea5245fdca02');
