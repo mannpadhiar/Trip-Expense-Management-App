@@ -21,7 +21,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   TextEditingController _tripAmountController = TextEditingController();
 
   Future<void> fetchTripInfo() async{
-    final info = await api.getTripInfo('67dd6c7a35ddea5245fdca02');
+    final info = await api.getTripInfo('67dfdefddf5f89e5bee84bfc');
     setState(() {
       _tripInformation = info;
     });
