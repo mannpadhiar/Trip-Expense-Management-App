@@ -17,6 +17,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
     // TODO: implement initState
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
   }
 
   @override
@@ -166,7 +167,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                 color: Colors.white,
               ),
               decoration: InputDecoration(
-                  hintText: 'Enter Your Description',
+                  hintText: 'Enter Your Description...',
                   hintTextDirection: TextDirection.ltr,
                   hintStyle: TextStyle(color: Colors.white60),
                   filled: true,
@@ -180,9 +181,14 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //select user
-                CircleAvatar(
-                  backgroundColor: Colors.black87,
-                  child: Icon(Icons.person, color: Colors.white,),
+                InkWell(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black87,
+                    child: Icon(Icons.person, color: Colors.white,),
+                  ),
+                  onTap: () {
+                    
+                  },
                 ),
 
                 //amount section
@@ -190,6 +196,8 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      cursorColor: Colors.white,
+                      cursorRadius: Radius.circular(20),
                       cursorHeight: 20,
                       style: TextStyle(fontSize: 10, color: Colors.white),
                       decoration: InputDecoration(
@@ -210,7 +218,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                     _showPersonSelectionDialog(context,allPersons,['John']);
                   },
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(20),
@@ -288,4 +296,6 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
       },
     );
   }
+
+
 }

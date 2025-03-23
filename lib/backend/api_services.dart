@@ -81,6 +81,12 @@ class ApiService{
     return jsonDecode(response.body);
   }
 
+  //fetch data from trips
+  Future<List<Map<String,dynamic>>> getTrips(String tripId) async{
+    final response = await http.get(Uri.parse('$baseUrl/trips/$tripId'));
+    return jsonDecode(response.body);
+  }
+
   //fetch data from users
   Future<List<Map<String,dynamic>>> getUsers() async{
     final response = await http.get(Uri.parse('$baseUrl/users/'));
