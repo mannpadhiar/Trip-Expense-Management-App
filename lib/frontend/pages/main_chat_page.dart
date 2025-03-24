@@ -21,11 +21,15 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   TextEditingController _tripAmountController = TextEditingController();
 
   Future<void> fetchTripInfo() async{
+    showDialog(context: context, builder: (context) {
+      return CircularProgressIndicator();
+    },);
     final info = await api.getTripInfo('67dfdefddf5f89e5bee84bfc');
     setState(() {
       _tripInformation = info;
     });
     print(_tripInformation);
+    Navigator.of(context).pop();
   }
 
 
@@ -279,7 +283,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                   shrinkWrap: true,
                   itemCount: _tripInformation['members'].length,
                   itemBuilder: (context, index) {
-                    final person = _tripInformation['members'][index];
+                    final person = _tripInformation['members'][index]['name'];
                     final isSelected = selectedPersons.contains(person);
                     return CheckboxListTile(
                       title: Text(person),
@@ -290,7 +294,9 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                         } else {
                           selectedPersons.remove(person);
                         }
-                        setState(() {});
+                        setState(() {
+
+                        });
                       },
                     );
                   },
