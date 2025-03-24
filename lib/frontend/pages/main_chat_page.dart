@@ -1,7 +1,7 @@
 import 'package:expances_management_app/backend/api_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+enum SampleItem { itemOne, itemTwo, itemThree }
 class MainChatPage extends StatefulWidget {
   const MainChatPage({super.key});
 
@@ -11,26 +11,31 @@ class MainChatPage extends StatefulWidget {
 
 class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderStateMixin {
 
+  //who is user come from previous page
+  String _userSelectFromButton = '67dfdefcdf5f89e5bee84bfa';
+
   late TabController _tabController;
   late ApiService api ;
 
   //from api
   late Map<String,dynamic> _tripInformation;
 
+  //for solve rebuilding the body in futureBuilder
+  late Future<Map<String,dynamic>> futureTripInfo;
+
   TextEditingController _tripDescriptionController = TextEditingController();
   TextEditingController _tripAmountController = TextEditingController();
 
-  Future<void> fetchTripInfo() async{
-    showDialog(context: context, builder: (context) {
-      return CircularProgressIndicator();
-    },);
+  Future<Map<String,dynamic>> fetchTripInfo() async{
     final info = await api.getTripInfo('67dfdefddf5f89e5bee84bfc');
     setState(() {
       _tripInformation = info;
     });
     print(_tripInformation);
-    Navigator.of(context).pop();
+    return _tripInformation;
   }
+
+  SampleItem? selectedItem;
 
 
   @override
@@ -39,7 +44,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     api = ApiService();
-    fetchTripInfo();
+    futureTripInfo = fetchTripInfo();
   }
 
   @override
@@ -53,12 +58,26 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
           style: TextStyle(color: Colors.black,fontSize: 24,fontWeight: FontWeight.w600),
         ),
       ),
-      body: Column(
-        children: [
-          _headerOfPage(),
-          _tabBarButtons(),
-          _mainContent(),
-        ],
+      body: FutureBuilder(
+        future: futureTripInfo,
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: CircularProgressIndicator());
+          }
+          else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+          else if(snapshot.hasData){
+            return Column(
+              children: [
+                _headerOfPage(),
+                _tabBarButtons(),
+                _mainContent(),
+              ],
+            );
+          }
+          return Text('No Data Found!!!');
+        },
       ),
     );
   }
@@ -169,8 +188,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   }
 
   Widget _footerPart() {
-    List<String> selectedPersons = ['John','Alex'];
-    List<String> allPersons = ['John', 'Mary', 'Alex', 'Sara', 'Mike'];
+    List<Map<String,dynamic>> selectedPersons = [];
 
     return Container(
       decoration: BoxDecoration(
@@ -204,15 +222,45 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 //select user
-                InkWell(
-                  child: CircleAvatar(
+                PopupMenuButton(
+                  initialValue: _userSelectFromButton,
+                  icon: CircleAvatar(
                     backgroundColor: Colors.black87,
                     child: Icon(Icons.person, color: Colors.white,),
                   ),
-                  onTap: () {
-                    
+                  onSelected: (value) {
+                    setState(() {
+                      _userSelectFromButton = value;
+                    });
+                    print('User selected : $_userSelectFromButton');
                   },
+                  itemBuilder: (BuildContext context) => List.from(_tripInformation['members']).map((item) => PopupMenuItem<String>(
+                    value: item['_id'],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.blue[200],
+                          radius:18,
+                          child: Text(item['name'][0].toUpperCase(),style: TextStyle(fontWeight: FontWeight.w500),),
+                        ),
+                        SizedBox(width: 3,),
+                        Text(item['name'],style: TextStyle(fontSize: 14),),
+                      ],
+                    ),
+                  )).toList(),
                 ),
+
+                // InkWell(
+                //   child: CircleAvatar(
+                //     backgroundColor: Colors.black87,
+                //     child: Icon(Icons.person, color: Colors.white,),
+                //   ),
+                //   onTap: () {
+                //
+                //   },
+                // ),
 
                 //amount section
                 Expanded(
@@ -239,7 +287,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                 // Split expense button
                 InkWell(
                   onTap: () {
-                    _showPersonSelectionDialog(context,allPersons,['John']);
+                    _showPersonSelectionDialog(context,List.from(_tripInformation["members"]));
                   },
                   child: Container(
                     padding: EdgeInsets.all(12),
@@ -269,7 +317,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   }
 
   //person selection dialog
-  void _showPersonSelectionDialog(BuildContext context, List<String> allPersons, List<String> selectedPersons) {
+  void _showPersonSelectionDialog(BuildContext context, List<Map<String,dynamic>> selectedPersons) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -283,10 +331,10 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                   shrinkWrap: true,
                   itemCount: _tripInformation['members'].length,
                   itemBuilder: (context, index) {
-                    final person = _tripInformation['members'][index]['name'];
+                    final person = _tripInformation['members'][index];
                     final isSelected = selectedPersons.contains(person);
                     return CheckboxListTile(
-                      title: Text(person),
+                      title: Text(person['name']),
                       value: isSelected,
                       onChanged: (bool? value) {
                         if (value == true) {
@@ -294,9 +342,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                         } else {
                           selectedPersons.remove(person);
                         }
-                        setState(() {
-
-                        });
+                        setState(() {});
                       },
                     );
                   },
@@ -312,6 +358,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
+                    print('--------------$selectedPersons');
                     Navigator.of(context).pop(selectedPersons);
                   },
                 ),
