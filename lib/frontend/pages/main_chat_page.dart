@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:expances_management_app/backend/api_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +28,18 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   TextEditingController _tripDescriptionController = TextEditingController();
   TextEditingController _tripAmountController = TextEditingController();
 
+  List<Map<String,dynamic>> selectedPersons = [];
+
   Future<Map<String,dynamic>> fetchTripInfo() async{
     final info = await api.getTripInfo('67dfdefddf5f89e5bee84bfc');
     setState(() {
       _tripInformation = info;
     });
     print(_tripInformation);
+
+    //for select all person in selection of distribution
+    selectedPersons = List<Map<String, dynamic>>.from(_tripInformation['members']);
+
     return _tripInformation;
   }
 
@@ -45,6 +53,22 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
     _tabController = TabController(length: 2, vsync: this);
     api = ApiService();
     futureTripInfo = fetchTripInfo();
+  }
+
+  //seekBar
+  void showScaffoldMessenger(String message,Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(fontWeight: FontWeight.w500),
+        ),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.all(16),
+      ),
+    );
   }
 
   @override
@@ -188,7 +212,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   }
 
   Widget _footerPart() {
-    List<Map<String,dynamic>> selectedPersons = [];
+
 
     return Container(
       decoration: BoxDecoration(
@@ -200,21 +224,47 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
         child: Column(
           children: [
             //top part of footer
-            TextFormField(
-              controller: _tripDescriptionController,
-              cursorColor: Colors.white,
-              cursorRadius: Radius.circular(20),
-              style: TextStyle(
-                color: Colors.white,
-              ),
-              decoration: InputDecoration(
-                  hintText: 'Enter Your Description...',
-                  hintTextDirection: TextDirection.ltr,
-                  hintStyle: TextStyle(color: Colors.white60),
-                  filled: true,
-                  fillColor: CupertinoColors.link,
-                  border: OutlineInputBorder(borderSide: BorderSide.none)
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _tripDescriptionController,
+                    cursorColor: Colors.white,
+                    cursorRadius: Radius.circular(20),
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Enter Your Description...',
+                      hintTextDirection: TextDirection.ltr,
+                      hintStyle: TextStyle(color: Colors.white60),
+                      filled: true,
+                      fillColor: CupertinoColors.link,
+                      border: OutlineInputBorder(borderSide: BorderSide.none)
+                    ),
+                  ),
+                ),
+                IconButton(onPressed: () async{
+                  showDialog(context: context, builder: (context) => Center(child: CircularProgressIndicator()),);
+
+                  //for seekBar in bottom
+                  if(_tripAmountController.text.isNotEmpty && _tripAmountController.text.isEmpty){
+                    await api.addTransaction(
+                      _tripInformation['_id'],
+                      _userSelectFromButton,
+                      double.parse(_tripAmountController.text),
+                      selectedPersons,
+                      _tripDescriptionController.text,
+                    );
+                  }
+                  else{
+                    showScaffoldMessenger('Enter your full massage',Colors.red);
+                  }
+                  _tripAmountController.clear();
+                  _tripDescriptionController.clear();
+                  Navigator.of(context).pop();
+                }, icon: Icon(Icons.telegram,color: Colors.black,size: 41,))
+              ],
             ),
 
             //bottom part of footer
@@ -223,10 +273,13 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
               children: [
                 //select user
                 PopupMenuButton(
+                  shape: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12),),borderSide: BorderSide.none),
+                  padding: EdgeInsets.all(0),
                   initialValue: _userSelectFromButton,
                   icon: CircleAvatar(
+                    radius: 23,
                     backgroundColor: Colors.black87,
-                    child: Icon(Icons.person, color: Colors.white,),
+                    child: Icon(Icons.person, color: Colors.white,size: 24,),
                   ),
                   onSelected: (value) {
                     setState(() {
@@ -236,18 +289,24 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                   },
                   itemBuilder: (BuildContext context) => List.from(_tripInformation['members']).map((item) => PopupMenuItem<String>(
                     value: item['_id'],
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.blue[200],
-                          radius:18,
-                          child: Text(item['name'][0].toUpperCase(),style: TextStyle(fontWeight: FontWeight.w500),),
-                        ),
-                        SizedBox(width: 3,),
-                        Text(item['name'],style: TextStyle(fontSize: 14),),
-                      ],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.blue[100],
+                        borderRadius: BorderRadius.all(Radius.circular(40))
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.blue[200],
+                            radius:20,
+                            child: Text(item['name'][0].toUpperCase(),style: TextStyle(fontWeight: FontWeight.w500),),
+                          ),
+                          SizedBox(width: 3,),
+                          Text(item['name'],style: TextStyle(fontSize: 14),),
+                        ],
+                      ),
                     ),
                   )).toList(),
                 ),
@@ -287,7 +346,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                 // Split expense button
                 InkWell(
                   onTap: () {
-                    _showPersonSelectionDialog(context,List.from(_tripInformation["members"]));
+                    _showPersonSelectionDialog(context,);
                   },
                   child: Container(
                     padding: EdgeInsets.all(12),
@@ -317,7 +376,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
   }
 
   //person selection dialog
-  void _showPersonSelectionDialog(BuildContext context, List<Map<String,dynamic>> selectedPersons) {
+  void _showPersonSelectionDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -342,6 +401,7 @@ class _MainChatPageState extends State<MainChatPage> with SingleTickerProviderSt
                         } else {
                           selectedPersons.remove(person);
                         }
+                        print(selectedPersons);
                         setState(() {});
                       },
                     );

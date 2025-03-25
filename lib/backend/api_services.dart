@@ -46,17 +46,18 @@ class ApiService{
   }
 
   //add a transaction in database
-  Future<void> addTransaction(String tripId,String paidBy,double amount,List<Map<String,dynamic>> distributedTo) async{
+  Future<void> addTransaction(String tripId,String paidBy,double amount,List<Map<String,dynamic>> distributedTo,String description) async{
     try{
       final response = await http.post(
         Uri.parse('$baseUrl/transactions'),
         headers: {"Content-Type": "application/json"},
-        body: {
+        body: jsonEncode({
           'tripId' : tripId,
           'paidBy' : paidBy,
           'amount' : amount,
+          'description' : description,
           'distributedTo' : distributedTo
-        }
+        })
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         print(response.body);
