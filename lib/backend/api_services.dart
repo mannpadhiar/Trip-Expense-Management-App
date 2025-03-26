@@ -79,7 +79,7 @@ class ApiService{
     else{
       print('there is some error in api with status ${response.statusCode} -  ${response.body}');
     }
-    return jsonDecode(response.body);
+    return List<Map<String,dynamic>>.from(jsonDecode(response.body));
   }
 
   //fetch data from trips
