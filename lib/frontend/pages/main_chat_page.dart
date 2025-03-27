@@ -1,5 +1,6 @@
 // import 'dart:ffi';
 import 'package:expances_management_app/backend/api_services.dart';
+import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _MainChatPageState extends State<MainChatPage>
 
   late TabController _tabController;
   late ApiService api;
+  late ExpenseCalculator calculator;
 
   //from api
   late Map<String, dynamic> _tripInformation;
@@ -31,6 +33,8 @@ class _MainChatPageState extends State<MainChatPage>
   TextEditingController _tripAmountController = TextEditingController();
 
   List<Map<String, dynamic>> selectedPersons = [];
+
+  double _totalSpent = 0;
 
   Future<Map<String, dynamic>> fetchTripInfo() async {
     final info = await api.getTripInfo(_tripId);
@@ -52,10 +56,14 @@ class _MainChatPageState extends State<MainChatPage>
     setState(() {
       _transactionsInformation = info;
     });
-    print(
-      '----------------------------------------------------------------------$_transactionsInformation',
-    );
+    calcTotal();
     return _transactionsInformation;
+  }
+
+  void calcTotal(){
+    setState(() {
+      _totalSpent = calculator.calcTotalSpent(_transactionsInformation);
+    });
   }
 
   @override
@@ -64,6 +72,7 @@ class _MainChatPageState extends State<MainChatPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     api = ApiService();
+    calculator = ExpenseCalculator();
     futureTripInfo = fetchTripInfo();
     futureTransactionInfo = fetchTransactionInfo();
   }
@@ -143,7 +152,7 @@ class _MainChatPageState extends State<MainChatPage>
                   children: [
                     Icon(Icons.currency_rupee, size: 24, color: Colors.white),
                     Text(
-                      '10000',
+                      _totalSpent.toString(),
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.white,
@@ -238,23 +247,20 @@ class _MainChatPageState extends State<MainChatPage>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      // mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ListView.builder(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             bool isRightSide =
-                                _transactionsInformation[index]['paidBy'] ==
+                                _transactionsInformation[index]['paidBy']['_id'] ==
                                 _userSelectFromButton;
                             return Align(
-                              alignment: isRightSide? Alignment.centerRight : Alignment.centerLeft,
+                              alignment: isRightSide ? Alignment.centerRight : Alignment.centerLeft,
                               child: Stack(
-                                // crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  //text of transaction
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 8,
@@ -263,7 +269,14 @@ class _MainChatPageState extends State<MainChatPage>
                                     child: Container(
                                       padding: EdgeInsets.all(25),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
+                                        borderRadius: isRightSide
+                                            ? BorderRadius.only(
+                                          bottomLeft: Radius.circular(30),
+                                          topLeft: Radius.circular(30),
+                                          topRight: Radius.circular(4),
+                                          bottomRight: Radius.circular(30),
+                                        )
+                                            : BorderRadius.only(
                                           bottomRight: Radius.circular(30),
                                           topRight: Radius.circular(30),
                                           topLeft: Radius.circular(4),
@@ -272,9 +285,9 @@ class _MainChatPageState extends State<MainChatPage>
                                         color: Colors.blueAccent,
                                       ),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                          //amount part
                                           Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -284,8 +297,7 @@ class _MainChatPageState extends State<MainChatPage>
                                                 size: 26,
                                               ),
                                               Text(
-                                                _transactionsInformation[index]['amount']
-                                                    .toString(),
+                                                _transactionsInformation[index]['amount'].toString(),
                                                 style: TextStyle(
                                                   fontSize: 24,
                                                   fontWeight: FontWeight.w800,
@@ -294,7 +306,8 @@ class _MainChatPageState extends State<MainChatPage>
                                               ),
                                             ],
                                           ),
-                                          SizedBox(height: 10),
+
+                                          //description part
                                           Text(
                                             _transactionsInformation[index]['description'],
                                             style: TextStyle(
@@ -302,17 +315,39 @@ class _MainChatPageState extends State<MainChatPage>
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
+
+                                          //description part
+                                          // Row(
+                                          //   children: [
+                                          //     Stack(
+                                          //       children: [
+                                          //         ListView.builder(
+                                          //           itemBuilder: (context, tempIndex) {
+                                          //             return CircleAvatar(
+                                          //               child: Text(_transactionsInformation[index]['distributedTo'][tempIndex][]),
+                                          //             );
+                                          //           },
+                                          //           itemCount: _transactionsInformation[index]['distributedTo']['distributedTo'],
+                                          //         )
+                                          //       ],
+                                          //     )
+                                          //   ],
+                                          // )
                                         ],
                                       ),
                                     ),
                                   ),
-                                  //circular avtar of transaction
-                                  CircleAvatar(
-                                    backgroundColor: Colors.black,
-                                    radius: 20,
-                                    child: Text(
-                                      _transactionsInformation[index]['paidBy'][0],
-                                      style: TextStyle(color: Colors.white),
+                                  //circular avatar positioned differently based on isRightSide
+                                  Positioned(
+                                    right: isRightSide ? 0 : null,
+                                    left: isRightSide ? null : 0,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.black,
+                                      radius: 20,
+                                      child: Text(
+                                        _transactionsInformation[index]['paidBy']['name'][0].toUpperCase(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -321,8 +356,8 @@ class _MainChatPageState extends State<MainChatPage>
                           },
                           itemCount: _transactionsInformation.length,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -482,11 +517,12 @@ class _MainChatPageState extends State<MainChatPage>
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
                       controller: _tripAmountController,
                       cursorColor: Colors.white,
                       cursorRadius: Radius.circular(20),
                       cursorHeight: 20,
-                      style: TextStyle(fontSize: 10, color: Colors.white),
+                      style: TextStyle(fontSize: 14, color: Colors.white),
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 20),
                         hintText: 'Amount...',
