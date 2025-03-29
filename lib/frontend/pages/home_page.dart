@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
             //button for joining a group
             ElevatedButton(onPressed: () {
 
-            }, child: Text('Create Trip'))
+            }, child: Text('Join Trip'))
           ],
         ),
       ),

@@ -3,6 +3,8 @@ import 'package:expances_management_app/backend/api_services.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
 
 class MainChatPage extends StatefulWidget {
   const MainChatPage({super.key});
@@ -22,8 +24,8 @@ class _MainChatPageState extends State<MainChatPage>
   late ExpenseCalculator calculator;
 
   //from api
-  late Map<String, dynamic> _tripInformation;
-  late List<Map<String, dynamic>> _transactionsInformation;
+  late Map<String, dynamic> _tripInformation = {};
+  late List<Map<String, dynamic>> _transactionsInformation = [];
 
   //for solve rebuilding the body in futureBuilder
   late Future<Map<String, dynamic>> futureTripInfo;
@@ -33,6 +35,8 @@ class _MainChatPageState extends State<MainChatPage>
   TextEditingController _tripAmountController = TextEditingController();
 
   List<Map<String, dynamic>> selectedPersons = [];
+
+  Map<String,dynamic> settlementsInformation = {'settlements': []};
 
   double _totalSpent = 0;
 
@@ -57,6 +61,7 @@ class _MainChatPageState extends State<MainChatPage>
       _transactionsInformation = info;
     });
     calcTotal();
+    setCalculatedSettlements();
     return _transactionsInformation;
   }
 
@@ -64,6 +69,12 @@ class _MainChatPageState extends State<MainChatPage>
     setState(() {
       _totalSpent = calculator.calcTotalSpent(_transactionsInformation);
     });
+  }
+
+  void setCalculatedSettlements(){
+      setState(() {
+        settlementsInformation = calculator.calculateSettlements(_transactionsInformation);
+      });
   }
 
   @override
@@ -106,20 +117,44 @@ class _MainChatPageState extends State<MainChatPage>
         ),
       ),
       body: FutureBuilder(
-        future: futureTripInfo,
+        future: Future.wait([futureTripInfo, futureTransactionInfo]),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (snapshot.hasData) {
-            return Column(
-              children: [_headerOfPage(), _tabBarButtons(), _mainContent()],
-            );
-          }
-          return Text('No Data Found!!!');
+          bool isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+          return Skeletonizer(
+            enabled: isLoading,
+            effect: ShimmerEffect(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+            ),
+            child: Column(
+              children: [
+                _headerOfPage(),
+                _tabBarButtons(),
+                _mainContent()
+              ],
+            ),
+          );
         },
       ),
+
+
+
+      // FutureBuilder(
+      //   future: futureTripInfo,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasError) {
+      //       return Center(child: Text("Error: ${snapshot.error}"));
+      //     } else if (snapshot.hasData) {
+      //       return Column(
+      //         children: [_headerOfPage(), _tabBarButtons(), _mainContent()],
+      //       );
+      //     }
+      //     return Text('No Data Found!!!');
+      //   },
+      // ),
     );
   }
 
@@ -177,7 +212,7 @@ class _MainChatPageState extends State<MainChatPage>
                   children: [
                     Icon(Icons.currency_rupee, size: 24, color: Colors.white),
                     Text(
-                      '00.00',
+                      (_totalSpent/selectedPersons.length).toString(),
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.white,
@@ -240,6 +275,7 @@ class _MainChatPageState extends State<MainChatPage>
       child: TabBarView(
         controller: _tabController,
         children: [
+          //first tab bar view
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -267,7 +303,7 @@ class _MainChatPageState extends State<MainChatPage>
                                       horizontal: 12,
                                     ),
                                     child: Container(
-                                      padding: EdgeInsets.all(25),
+                                      padding: EdgeInsets.all(22),
                                       decoration: BoxDecoration(
                                         borderRadius: isRightSide
                                             ? BorderRadius.only(
@@ -316,23 +352,31 @@ class _MainChatPageState extends State<MainChatPage>
                                             ),
                                           ),
 
-                                          //description part
-                                          // Row(
-                                          //   children: [
-                                          //     Stack(
-                                          //       children: [
-                                          //         ListView.builder(
-                                          //           itemBuilder: (context, tempIndex) {
-                                          //             return CircleAvatar(
-                                          //               child: Text(_transactionsInformation[index]['distributedTo'][tempIndex][]),
-                                          //             );
-                                          //           },
-                                          //           itemCount: _transactionsInformation[index]['distributedTo']['distributedTo'],
-                                          //         )
-                                          //       ],
-                                          //     )
-                                          //   ],
-                                          // )
+                                          //distribution to part
+                                          SizedBox(height: 4,),
+                                          IntrinsicWidth(
+                                            child: Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(2.0),
+                                                  child: Text('To : '),
+                                                ),
+                                                for(int i = 0; i < _transactionsInformation[index]['distributedTo'].length;i++)
+                                                  Align(
+                                                    widthFactor: .6,
+                                                    child: CircleAvatar(
+                                                      radius: 12,
+                                                      backgroundColor: Colors.blueAccent,
+                                                      child: CircleAvatar(
+                                                        backgroundColor: Colors.white,
+                                                        radius: 10,
+                                                        child: Text(_transactionsInformation[index]['distributedTo'][i]['userId']['name'][0].toString().toUpperCase(),style: TextStyle(fontSize: 10),),
+                                                      ),
+                                                    ),
+                                                  )
+                                              ],
+                                            ),
+                                          )
                                         ],
                                       ),
                                     ),
@@ -364,7 +408,8 @@ class _MainChatPageState extends State<MainChatPage>
               _footerPart(),
             ],
           ),
-          Center(child: Text('Settle Up is hear')),
+          //second tab bsr view
+          _secondTabBarView(),
         ],
       ),
     );
@@ -414,11 +459,21 @@ class _MainChatPageState extends State<MainChatPage>
                     //for seekBar in bottom
                     if (_tripAmountController.text.isNotEmpty &&
                         _tripAmountController.text.isNotEmpty) {
+
+                      int personCount = selectedPersons.length;
+
+                      List<Map<String, dynamic>> distributedTo = selectedPersons.map((personId) {
+                        return {
+                          "userId": personId,
+                          "amount": double.parse(_tripAmountController.text) / personCount,
+                        };
+                      }).toList();
+
                       await api.addTransaction(
                         _tripInformation['_id'],
                         _userSelectFromButton,
                         double.parse(_tripAmountController.text),
-                        selectedPersons,
+                        distributedTo,
                         _tripDescriptionController.text,
                       );
                       await fetchTransactionInfo();
@@ -570,6 +625,61 @@ class _MainChatPageState extends State<MainChatPage>
           ],
         ),
       ),
+    );
+  }
+
+  Widget _secondTabBarView(){
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: settlementsInformation['settlements'].length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                    color: Color(0xb54ba6ee)
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      //name information
+                      Row(
+                        children: [
+                          Text(settlementsInformation['settlements'][index]['from'],style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600),),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: Icon(Icons.arrow_right_alt,color: Colors.white,size: 30,),
+                          ),
+                          Text(settlementsInformation['settlements'][index]['to'],style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600),),
+                        ],
+                      ),
+                      //amount
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.currency_rupee,size: 15),
+                            Text(settlementsInformation['settlements'][index]['amount'].toString(),style: TextStyle(fontWeight: FontWeight.w800),),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        )
+      ],
     );
   }
 
