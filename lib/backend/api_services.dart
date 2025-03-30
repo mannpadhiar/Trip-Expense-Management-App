@@ -99,7 +99,7 @@ class ApiService{
 
   //add new member in trip / someone join the group
   Future<void> addMemberToTrip(String tripId, String userId) async {
-    final url = Uri.parse("https://your-backend.com/trip/$tripId/addMember");
+    final url = Uri.parse("$baseUrl/trip/$tripId/addMember");
 
     try {
       final response = await http.post(
