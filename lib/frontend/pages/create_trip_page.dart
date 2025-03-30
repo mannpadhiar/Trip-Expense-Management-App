@@ -1,6 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expances_management_app/frontend/wedgets.dart';
 import '../../backend/api_services.dart';
+import 'main_chat_page.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 
 class CreateTripPage extends StatefulWidget {
   const CreateTripPage({super.key});
@@ -24,6 +28,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   late ApiService apiService;
 
+  String? tripIdSelected = '';
+
   Future<void> getUsersFromApi() async{
     List<Map<String, dynamic>> fetchedUsers = await apiService.getUsers();
     setState(() {
@@ -34,9 +40,21 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   Future<void> createTripGroup() async{
     if(_groupName.text.isNotEmpty && _createByEmail.text.isNotEmpty && _selectedMembers.isNotEmpty){
+
+      showDialog(
+        context: context,
+        builder: (context) => Center(child: LoadingAnimationWidget.fourRotatingDots(
+          color: CupertinoColors.link,
+          size: 24,
+        ),),
+      );
+
       final selectedId = await apiService.addUser(_createByName.text, _createByEmail.text);
       _selectedMembers.add(selectedId??'none');
-      await apiService.createTrip(_groupName.text, selectedId!, _selectedMembers);
+      tripIdSelected = await apiService.createTrip(_groupName.text, selectedId!, _selectedMembers);
+
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: tripIdSelected!,defaultUserId: selectedId,),));
       showScaffoldMessenger('Group Created Successfully',Colors.green);
     }else{
       if(_groupName.text.isEmpty){
@@ -76,7 +94,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Trip'),backgroundColor: Colors.blue,),
+      appBar: AppBar(title: Text('Create Trip'),backgroundColor: CupertinoColors.link,),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -97,8 +115,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
                     elevation: 4,
                     shadowColor: Colors.black.withOpacity(0.3),
                   ),
-                  onPressed: () {
-                    createTripGroup();
+                  onPressed: () async{
+                    await createTripGroup();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

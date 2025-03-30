@@ -1,13 +1,17 @@
 // import 'dart:ffi';
 import 'package:expances_management_app/backend/api_services.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 
 class MainChatPage extends StatefulWidget {
-  const MainChatPage({super.key});
+  final String tripId;
+  final String defaultUserId;
+  const MainChatPage({super.key,required this.tripId,required this.defaultUserId});
 
   @override
   State<MainChatPage> createState() => _MainChatPageState();
@@ -15,9 +19,8 @@ class MainChatPage extends StatefulWidget {
 
 class _MainChatPageState extends State<MainChatPage>
     with SingleTickerProviderStateMixin {
-  //who is user come from previous page
-  String _userSelectFromButton = '67dfdefcdf5f89e5bee84bfa';
-  String _tripId = '67dfdefddf5f89e5bee84bfc';
+  //who is user come from previous page initialize in init state
+  late String _userSelectFromButton;
 
   late TabController _tabController;
   late ApiService api;
@@ -40,8 +43,9 @@ class _MainChatPageState extends State<MainChatPage>
 
   double _totalSpent = 0;
 
+
   Future<Map<String, dynamic>> fetchTripInfo() async {
-    final info = await api.getTripInfo(_tripId);
+    final info = await api.getTripInfo(widget.tripId);
     setState(() {
       _tripInformation = info;
     });
@@ -56,7 +60,7 @@ class _MainChatPageState extends State<MainChatPage>
   }
 
   Future<List<Map<String, dynamic>>> fetchTransactionInfo() async {
-    final info = await api.getTransactions(_tripId);
+    final info = await api.getTransactions(widget.tripId);
     setState(() {
       _transactionsInformation = info;
     });
@@ -83,6 +87,7 @@ class _MainChatPageState extends State<MainChatPage>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     api = ApiService();
+    _userSelectFromButton = widget.defaultUserId;
     calculator = ExpenseCalculator();
     futureTripInfo = fetchTripInfo();
     futureTransactionInfo = fetchTransactionInfo();
@@ -138,7 +143,24 @@ class _MainChatPageState extends State<MainChatPage>
         },
       ),
 
-
+      endDrawer: Drawer(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('QR code for trip'),
+                QrImageView(
+                  data: widget.tripId,
+                  version: QrVersions.auto,
+                    size: 200.0,
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
 
       // FutureBuilder(
       //   future: futureTripInfo,
@@ -453,7 +475,10 @@ class _MainChatPageState extends State<MainChatPage>
                       context: context,
                       builder:
                           (context) =>
-                              Center(child: CircularProgressIndicator()),
+                              Center(child: LoadingAnimationWidget.fourRotatingDots(
+                                color: CupertinoColors.link,
+                                size: 24,
+                              ),),
                     );
 
                     //for seekBar in bottom

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'frontend/pages/create_trip_page.dart';
+import 'frontend/pages/home_page.dart';
 import 'frontend/pages/main_chat_page.dart';
 import 'frontend/test.dart';
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: MainChatPage(),
+      home: HomePage(),
     );
   }
 }

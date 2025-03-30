@@ -27,7 +27,7 @@ class ApiService{
   }
 
   //add a trip in database
-  Future<void> createTrip(String name,String createdBy,List<String> members) async{
+  Future<String?> createTrip(String name,String createdBy,List<String> members) async{
     try{
       final response = await http.post(
           Uri.parse('$baseUrl/trips'),
@@ -36,6 +36,8 @@ class ApiService{
       );
       if(response.statusCode == 200 || response.statusCode == 201){
         print(response.body);
+
+        return jsonDecode(response.body)['_id'];
       }
       else{
         print('there is some error in api with status ${response.statusCode} -  ${response.body}');
@@ -43,6 +45,7 @@ class ApiService{
     }catch(e){
       print(e);
     }
+    return null;
   }
 
   //add a transaction in database
@@ -93,4 +96,26 @@ class ApiService{
     final response = await http.get(Uri.parse('$baseUrl/users/'));
     return List<Map<String,dynamic>>.from(jsonDecode(response.body));
   }
+
+  //add new member in trip / someone join the group
+  Future<void> addMemberToTrip(String tripId, String userId) async {
+    final url = Uri.parse("https://your-backend.com/trip/$tripId/addMember");
+
+    try {
+      final response = await http.post(
+        url,
+        body: jsonEncode({"userId": userId}),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        print("Member added successfully: ${response.body}");
+      } else {
+        print("Failed to add member: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
 }
