@@ -1,6 +1,5 @@
 // import 'dart:ffi';
 import 'package:expances_management_app/backend/api_services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -151,11 +150,6 @@ class _MainChatPageState extends State<MainChatPage>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text('QR code for trip'),
-                QrImageView(
-                  data: widget.tripId,
-                  version: QrVersions.auto,
-                    size: 200.0,
-                  ),
               ],
             ),
           ),

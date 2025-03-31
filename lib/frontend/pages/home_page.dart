@@ -185,10 +185,21 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                         ),
                                       );
-                                      userId = await api.addUser(_name.text, _email.text);
-                                      await api.addMemberToTrip(_tripId.text, userId!);
+
+                                      Map<String,dynamic> tripInfo = await api.getTripInfo(_tripId.text);
+                                      bool isUserIsMember = tripInfo['members'].any((member) => member['_id'] == _tripId.text);
+
+                                      if(isUserIsMember){
+
+                                      }else{
+                                        userId = await api.addUser(_name.text, _email.text);
+                                        await api.addMemberToTrip(_tripId.text, userId!);
+                                      }
+
+                                      print(tripInfo);
+
                                       Navigator.of(context).pop();
-                                      Navigator.push(context,MaterialPageRoute(builder: (context) => MainChatPage(tripId: _tripId.text,defaultUserId: userId!,),));
+                                      // Navigator.push(context,MaterialPageRoute(builder: (context) => MainChatPage(tripId: _tripId.text,defaultUserId: userId!,),));
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
