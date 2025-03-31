@@ -187,19 +187,21 @@ class _HomePageState extends State<HomePage> {
                                       );
 
                                       Map<String,dynamic> tripInfo = await api.getTripInfo(_tripId.text);
-                                      bool isUserIsMember = tripInfo['members'].any((member) => member['_id'] == _tripId.text);
-
-                                      if(isUserIsMember){
-
+                                      var userMemberId = tripInfo['members'].firstWhere(
+                                            (member) => member['name'].toString().toLowerCase() == _name.text.toLowerCase() &&
+                                            member['email'].toString().toLowerCase() == _email.text.toLowerCase(),
+                                        orElse: () => null, // Return null if no match is found
+                                      );
+                                      print('---------------------------------------------------------------------------$userMemberId');
+                                      if(userMemberId != null){
+                                        Navigator.of(context).pop();
+                                        Navigator.push(context,MaterialPageRoute(builder: (context) => MainChatPage(tripId: _tripId.text,defaultUserId: userMemberId!,),));
                                       }else{
                                         userId = await api.addUser(_name.text, _email.text);
                                         await api.addMemberToTrip(_tripId.text, userId!);
+                                        Navigator.of(context).pop();
+                                        Navigator.push(context,MaterialPageRoute(builder: (context) => MainChatPage(tripId: _tripId.text,defaultUserId: userId!,),));
                                       }
-
-                                      print(tripInfo);
-
-                                      Navigator.of(context).pop();
-                                      // Navigator.push(context,MaterialPageRoute(builder: (context) => MainChatPage(tripId: _tripId.text,defaultUserId: userId!,),));
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
