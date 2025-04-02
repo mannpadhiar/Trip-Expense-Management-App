@@ -228,7 +228,7 @@ class _MainChatPageState extends State<MainChatPage>
                   children: [
                     Icon(Icons.currency_rupee, size: 24, color: Colors.white),
                     Text(
-                      (_totalSpent/selectedPersons.length).toString(),
+                      (_totalSpent/selectedPersons.length).ceilToDouble().toString(),
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.white,
@@ -302,7 +302,7 @@ class _MainChatPageState extends State<MainChatPage>
                   child: Column(
                     children: [
                       Expanded(
-                        child: ListView.builder(
+                        child:_transactionsInformation.isEmpty ? _noMemberShow() : ListView.builder(
                           physics: BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
@@ -476,8 +476,8 @@ class _MainChatPageState extends State<MainChatPage>
                     );
 
                     //for seekBar in bottom
-                    if (_tripAmountController.text.isNotEmpty &&
-                        _tripAmountController.text.isNotEmpty) {
+                    if (_tripAmountController.text.isNotEmpty && int.parse(_tripAmountController.text) != 0 &&
+                        _tripAmountController.text.isNotEmpty && selectedPersons.isNotEmpty) {
 
                       int personCount = selectedPersons.length;
 
@@ -496,17 +496,42 @@ class _MainChatPageState extends State<MainChatPage>
                         _tripDescriptionController.text,
                       );
                       await fetchTransactionInfo();
-                    } else {
-                      showScaffoldMessenger(
-                        'Enter your full massage',
-                        Colors.red,
-                      );
+                      _tripAmountController.clear();
+                      _tripDescriptionController.clear();
                     }
-                    _tripAmountController.clear();
-                    _tripDescriptionController.clear();
+                    else {
+
+                      if(_tripAmountController.text.isEmpty){
+                        showScaffoldMessenger(
+                          'Enter your Amount',
+                          Colors.red,
+                        );
+                      }else if(int.parse(_tripAmountController.text) == 0){
+                        showScaffoldMessenger(
+                          'Enter your zero',
+                          Colors.red,
+                        );
+                      }else if(_tripDescriptionController.text.isEmpty){
+                        showScaffoldMessenger(
+                          'Enter your Description',
+                          Colors.red,
+                        );
+                      }else{
+                        showScaffoldMessenger(
+                          'Select minimum one person',
+                          Colors.red,
+                        );
+                      }
+                    }
                     Navigator.of(context).pop();
                   },
-                  icon: Icon(Icons.telegram, color: Colors.black, size: 41),
+                  icon: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.telegram, color: Colors.black, size: 41),
+                  ),
                 ),
               ],
             ),
@@ -651,7 +676,7 @@ class _MainChatPageState extends State<MainChatPage>
     return Column(
       children: [
         Expanded(
-          child: ListView.builder(
+          child: settlementsInformation['settlements'].isEmpty ? _noMemberShow() :ListView.builder(
             itemCount: settlementsInformation['settlements'].length,
             itemBuilder: (context, index) {
               return Padding(
@@ -699,6 +724,21 @@ class _MainChatPageState extends State<MainChatPage>
           ),
         )
       ],
+    );
+  }
+
+  Widget _noMemberShow(){
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.currency_rupee,size: 80,color: Colors.black12,),
+            Text("Make first Transaction",style: TextStyle(color: Colors.black12,fontSize: 14,fontWeight: FontWeight.w500),)
+          ],
+        ),
+      ),
     );
   }
 

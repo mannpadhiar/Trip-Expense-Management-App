@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:expances_management_app/frontend/wedgets.dart';
 import '../../backend/api_services.dart';
+import '../../backend/local_storage.dart';
 import 'main_chat_page.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -27,15 +28,20 @@ class _CreateTripPageState extends State<CreateTripPage> {
   bool _isAddingUser = false;
 
   late ApiService apiService;
+  late SqlDatabase sqlDatabase;
 
   String? tripIdSelected = '';
 
-  Future<void> getUsersFromApi() async{
-    List<Map<String, dynamic>> fetchedUsers = await apiService.getUsers();
+  Future<void> getUsersFromSqlDatabase()async{
+    List<Map<String, dynamic>> fetchedUsers = await sqlDatabase.fetchInfoFromUser();
     setState(() {
       _users = fetchedUsers;
     });
-    print(_users);
+  }
+
+  Future<void> initUserSqlDatabase() async{
+    await sqlDatabase.initDatabaseUser();
+    await getUsersFromSqlDatabase();
   }
 
   Future<void> createTripGroup() async{
@@ -88,7 +94,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
     // TODO: implement initState
     super.initState();
     apiService = ApiService();
-    getUsersFromApi();
+    sqlDatabase = SqlDatabase();
+    initUserSqlDatabase();
   }
 
   @override
@@ -303,22 +310,22 @@ class _CreateTripPageState extends State<CreateTripPage> {
                           leading: CircleAvatar(
                             backgroundColor: Colors.blueAccent,
                             child: Text(
-                              user['name']![0].toUpperCase(),
+                              user['userName']![0].toUpperCase(),
                               style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
                             ),
                           ),
-                          title: Text(user['name'],style: TextStyle(fontWeight: FontWeight.w600),),
-                          subtitle: Text(user['email']),
+                          title: Text(user['userName'],style: TextStyle(fontWeight: FontWeight.w600),),
+                          subtitle: Text(user['userEmail']),
                           trailing: Checkbox(
-                            value: _selectedMembers.contains(user['_id']),
+                            value: _selectedMembers.contains(user['id']),
                             onChanged: (value) {
                               if(value == true){
                                 setState(() {
-                                  _selectedMembers.add(user['_id']);
+                                  _selectedMembers.add(user['id']);
                                 });
                               }else{
                                 setState(() {
-                                  _selectedMembers.remove(user['_id']);
+                                  _selectedMembers.remove(user['id']);
                                 });
                               }
                             },
@@ -388,13 +395,18 @@ class _CreateTripPageState extends State<CreateTripPage> {
                 ElevatedButton(
                   onPressed: () async{
                     if(_newUserEmail.text.isNotEmpty && _newUserName.text.isNotEmpty){
-                      await apiService.addUser(_newUserName.text, _newUserEmail.text);
+                      final id = await apiService.addUser(_newUserName.text, _newUserEmail.text);
+                      await sqlDatabase.addDataUserSqlDatabase({
+                        'userId' : id,
+                        'userName' : _newUserName.text,
+                        'userEmail' : _newUserEmail.text
+                      });
                       _newUserEmail.clear();
                       _newUserName.clear();
                       setState(() {
                         _isAddingUser = false;
                       });
-                      getUsersFromApi();
+                      getUsersFromSqlDatabase();
                     }
                     else{
                       if(_newUserEmail.text.isEmpty){

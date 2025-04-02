@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: HomePage(),
+      // home: MainChatPage(tripId: '67ec1edd7af705f2c2b8d5ed', defaultUserId: '67ec1edc7af705f2c2b8d5eb'),
     );
   }
 }
