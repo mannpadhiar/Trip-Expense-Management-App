@@ -1,9 +1,7 @@
 import 'package:expances_management_app/backend/api_services.dart';
-import 'package:expances_management_app/frontend/pages/qr_scanner_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import '../wedgets.dart';
 import 'package:expances_management_app/backend/local_storage.dart';
 import 'create_trip_page.dart';
 import 'main_chat_page.dart';
@@ -21,10 +19,36 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _name = TextEditingController();
   TextEditingController _email = TextEditingController();
 
-  List<Map<String, dynamic>> tripInfoFromSql = [];
+  // List<Map<String, dynamic>> tripInfoFromSql = [];
+  late List<Map<String,dynamic>> _resentTrips = [];
+
 
   late ApiService api;
   late SqlDatabase sqlDatabase;
+
+  Future<void> initTripSqlDatabase() async{
+    await sqlDatabase.initDatabaseTrip();
+    await getTripFromSqlDatabase();
+  }
+
+  Future<void> getTripFromSqlDatabase()async{
+    List<Map<String, dynamic>> fetchedUsers = await sqlDatabase.fetchInfoFromTrip();
+    setState(() {
+      _resentTrips = fetchedUsers;
+    });
+    print('-+-+-+-+-+-+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+$_resentTrips');
+  }
+
+  Future<void> createSQLResentTrip(String userId,String tripId,String tripName) async{
+    if(!_resentTrips.any((element) => (element['userId'] == userId && element['tripId'] == tripId))){
+      await sqlDatabase.addDataTripSqlDatabase({
+        'userId' : userId,
+        'tripId' : tripId,
+        'tripName' : tripName
+      });
+    }
+  }
+
 
   @override
   void initState() {
@@ -32,18 +56,19 @@ class _HomePageState extends State<HomePage> {
     api = ApiService();
     sqlDatabase = SqlDatabase();
     initSqlDatabase();
+    initTripSqlDatabase();
   }
 
-  Future<void> fetchTripInfo() async {
-    List<Map<String, dynamic>> info = await sqlDatabase.fetchInfo();
-    setState(() {
-      tripInfoFromSql = info;
-    });
-  }
+  // Future<void> fetchTripInfo() async {
+  //   List<Map<String, dynamic>> info = await sqlDatabase.fetchInfo();
+  //   setState(() {
+  //     tripInfoFromSql = info;
+  //   });
+  // }
 
   Future<void> initSqlDatabase() async {
     await sqlDatabase.initDatabase();
-    await fetchTripInfo();
+    // await fetchTripInfo();
     // await sqlDatabase.deleteTripInfo(1);
     // await sqlDatabase.deleteTripInfo(3);
     // await sqlDatabase.addTripInfo({
@@ -258,8 +283,7 @@ class _HomePageState extends State<HomePage> {
                                               _email.text.isNotEmpty) {
                                             showDialog(
                                               context: context,
-                                              builder:
-                                                  (context) => Center(
+                                              builder: (context) => Center(
                                                     child:
                                                         LoadingAnimationWidget.fourRotatingDots(
                                                           color:
@@ -301,10 +325,13 @@ class _HomePageState extends State<HomePage> {
                                                       (context) => MainChatPage(
                                                         tripId: _tripId.text,
                                                         defaultUserId:
-                                                            userMemberId!,
+                                                            userMemberId,
                                                       ),
                                                 ),
                                               );
+
+                                              //for adding in resent trip
+                                              createSQLResentTrip(userMemberId,_tripId.text,tripInfo['name']);
                                             } else {
                                               userId = await api.addUser(
                                                 _name.text,
@@ -314,6 +341,10 @@ class _HomePageState extends State<HomePage> {
                                                 _tripId.text,
                                                 userId!,
                                               );
+
+                                              //for adding in resent trip
+                                              await createSQLResentTrip(userId!,_tripId.text,tripInfo['name']);
+
                                               Navigator.of(context).pop();
                                               Navigator.push(
                                                 context,
@@ -326,6 +357,8 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               );
                                             }
+
+
                                           } else {
                                             showScaffoldMessenger(
                                               'Enter your Trip Id',
@@ -362,7 +395,7 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ),
                                         ),
-                                        child: Text(
+                                        child: const Text(
                                           'Join Trip',
                                           style: TextStyle(
                                             fontSize: 18,
@@ -396,7 +429,7 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.white,
                             ),
                             SizedBox(width: 6),
-                            Text(
+                            const Text(
                               'Join Trip',
                               style: TextStyle(
                                 fontSize: 16,
@@ -431,19 +464,19 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    ListView.builder(
+                    _resentTrips.isEmpty
+                        ? Center(child: Text('No recent Trip'))
+                        :ListView.builder(
                       shrinkWrap: true,
-                      itemCount: tripInfoFromSql.length,
+                      itemCount: _resentTrips.length,
                       itemBuilder: (context, index) {
-                        return tripInfoFromSql.isEmpty == 0
-                            ? Center(child: Text('No recent Trip'))
-                            : Padding(
+                        return Padding(
                               padding: const EdgeInsets.symmetric(
                                 vertical: 4.0,
                               ),
                               child: InkWell(
                                 onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: tripInfoFromSql[index]['tripId'], defaultUserId: tripInfoFromSql[index]['userId']),));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: _resentTrips[index]['tripId'], defaultUserId: _resentTrips[index]['userId']),));
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(12),
@@ -467,7 +500,7 @@ class _HomePageState extends State<HomePage> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            tripInfoFromSql[index]['tripName'],
+                                            _resentTrips[index]['tripName'],
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,
@@ -478,7 +511,7 @@ class _HomePageState extends State<HomePage> {
                                             children: [
                                               Icon(Icons.group,size: 18,color: Colors.black54),
                                               SizedBox(width: 3,),
-                                              Text('${tripInfoFromSql[index]['members']} members',style: TextStyle(color: Colors.black54),),
+                                              Text('4 members',style: TextStyle(color: Colors.black54),),
                                             ],
                                           )
                                         ],

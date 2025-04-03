@@ -23,7 +23,9 @@ class _CreateTripPageState extends State<CreateTripPage> {
   final TextEditingController _newUserEmail = TextEditingController();
 
   List<Map<String,dynamic>> _users = [];
+  List<Map<String,dynamic>> _resentTrips = [];
   List<String> _selectedMembers = [];
+
 
   bool _isAddingUser = false;
 
@@ -39,14 +41,38 @@ class _CreateTripPageState extends State<CreateTripPage> {
     });
   }
 
+
   Future<void> initUserSqlDatabase() async{
     await sqlDatabase.initDatabaseUser();
     await getUsersFromSqlDatabase();
   }
 
+  //for add trip in resent trip
+  Future<void> initTripSqlDatabase() async{
+    await sqlDatabase.initDatabaseTrip();
+    await getTripFromSqlDatabase();
+  }
+
+  Future<void> getTripFromSqlDatabase()async{
+    List<Map<String, dynamic>> fetchedUsers = await sqlDatabase.fetchInfoFromTrip();
+    setState(() {
+      _resentTrips = fetchedUsers;
+    });
+  }
+
+  Future<void> createSQLResentTrip(String userId,String tripId,String tripName) async{
+    if(!_resentTrips.any((element) => (element['userId'] == userId && element['tripId'] == tripId))){
+      await sqlDatabase.addDataTripSqlDatabase({
+        'userId' : userId,
+        'tripId' : tripId,
+        'tripName' : tripName,
+      });
+    }
+  }
+  //
+
   Future<void> createTripGroup() async{
     if(_groupName.text.isNotEmpty && _createByEmail.text.isNotEmpty && _selectedMembers.isNotEmpty){
-
       showDialog(
         context: context,
         builder: (context) => Center(child: LoadingAnimationWidget.fourRotatingDots(
@@ -58,6 +84,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
       final selectedId = await apiService.addUser(_createByName.text, _createByEmail.text);
       _selectedMembers.add(selectedId??'none');
       tripIdSelected = await apiService.createTrip(_groupName.text, selectedId!, _selectedMembers);
+
+      await createSQLResentTrip(selectedId,tripIdSelected!,_groupName.text);
 
       Navigator.of(context).pop();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: tripIdSelected!,defaultUserId: selectedId,),));
@@ -96,6 +124,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
     apiService = ApiService();
     sqlDatabase = SqlDatabase();
     initUserSqlDatabase();
+    initTripSqlDatabase();
   }
 
   @override
@@ -317,15 +346,15 @@ class _CreateTripPageState extends State<CreateTripPage> {
                           title: Text(user['userName'],style: TextStyle(fontWeight: FontWeight.w600),),
                           subtitle: Text(user['userEmail']),
                           trailing: Checkbox(
-                            value: _selectedMembers.contains(user['id']),
+                            value: _selectedMembers.contains(user['userId']),
                             onChanged: (value) {
                               if(value == true){
                                 setState(() {
-                                  _selectedMembers.add(user['id']);
+                                  _selectedMembers.add(user['userId']);
                                 });
                               }else{
                                 setState(() {
-                                  _selectedMembers.remove(user['id']);
+                                  _selectedMembers.remove(user['userId']);
                                 });
                               }
                             },
@@ -394,6 +423,13 @@ class _CreateTripPageState extends State<CreateTripPage> {
               children: [
                 ElevatedButton(
                   onPressed: () async{
+                    showDialog(
+                      context: context,
+                      builder: (context) => Center(child: LoadingAnimationWidget.fourRotatingDots(
+                        color: CupertinoColors.link,
+                        size: 24,
+                      ),),
+                    );
                     if(_newUserEmail.text.isNotEmpty && _newUserName.text.isNotEmpty){
                       final id = await apiService.addUser(_newUserName.text, _newUserEmail.text);
                       await sqlDatabase.addDataUserSqlDatabase({
@@ -415,6 +451,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                         showScaffoldMessenger('Enter your Email', Colors.red);
                       }
                     }
+                    Navigator.of(context).pop();
                   },
                   child: Text('Add User'),
                 ),

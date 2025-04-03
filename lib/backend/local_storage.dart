@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 class SqlDatabase{
   late Database _database;
   late Database _userDatabase;
+  late Database _tripDatabase;
 
   Future<void> initDatabase() async{
     try{
@@ -61,25 +62,24 @@ class SqlDatabase{
   }
 
 
+  //for storing user information
   Future<void> initDatabaseUser() async{
     try{
       _userDatabase = await openDatabase(
         join(await getDatabasesPath(),'user_database.db'),
         version: 1,
         onCreate: (db, version) async{
-          return await db.execute(
-              '''
+          return await db.execute('''
             CREATE TABLE userDatabase(
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               userId TEXT,
               userName TEXT,
               userEmail
             )
-          '''
-          );
+          ''');
         },
       );
-      fetchInfoFromUser();
+      await fetchInfoFromUser();
     }catch(e){
       print('Got error while creating user SQL database : $e');
     }
@@ -92,9 +92,47 @@ class SqlDatabase{
 
   Future<void> addDataUserSqlDatabase(Map<String,dynamic> user) async{
     try{
-      await _userDatabase.insert('UserDatabase', user);
+      await _userDatabase.insert('userDatabase', user);
     }catch(e){
       print('error while adding data in database : $e');
     }
   }
+
+
+  //for storing trip info
+  Future<void> initDatabaseTrip() async{
+    try{
+      _tripDatabase = await openDatabase(
+        join(await getDatabasesPath(),'trip_database.db'),
+        version: 1,
+        onCreate: (db, version) async{
+          return await db.execute('''
+            CREATE TABLE tripDatabase(
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              userId TEXT,
+              tripId TEXT,
+              tripName TEXT
+            )
+          ''');
+        },
+      );
+      await fetchInfoFromTrip();
+    }catch(e){
+      print('Got error while creating trip SQL database : $e');
+    }
+  }
+
+  Future<List<Map<String,dynamic>>> fetchInfoFromTrip() async{
+    final info = await _tripDatabase.query('tripDatabase');
+    return info;
+  }
+
+  Future<void> addDataTripSqlDatabase(Map<String,dynamic> user) async{
+    try{
+      await _tripDatabase.insert('tripDatabase', user);
+    }catch(e){
+      print('error while adding data in database : $e');
+    }
+  }
+
 }
