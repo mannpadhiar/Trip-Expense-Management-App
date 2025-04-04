@@ -1,4 +1,6 @@
 // import 'dart:ffi';
+import 'dart:convert';
+
 import 'package:expances_management_app/backend/api_services.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,6 +52,8 @@ class _MainChatPageState extends State<MainChatPage>
     });
     print(_tripInformation);
 
+    print('@#@#@#@#@#@#@#@#@#@#@#@#@##@${(widget.defaultUserId)}');
+
     //for select all person in selection of distribution
     selectedPersons = List<Map<String, dynamic>>.from(
       _tripInformation['members'],
@@ -75,9 +79,9 @@ class _MainChatPageState extends State<MainChatPage>
   }
 
   void setCalculatedSettlements(){
-      setState(() {
-        settlementsInformation = calculator.calculateSettlements(_transactionsInformation);
-      });
+    setState(() {
+      settlementsInformation = calculator.calculateSettlements(_transactionsInformation);
+    });
   }
 
   @override
@@ -308,7 +312,7 @@ class _MainChatPageState extends State<MainChatPage>
                           itemBuilder: (context, index) {
                             bool isRightSide =
                                 _transactionsInformation[index]['paidBy']['_id'] ==
-                                _userSelectFromButton;
+                                    _userSelectFromButton;
                             return Align(
                               alignment: isRightSide ? Alignment.centerRight : Alignment.centerLeft,
                               child: Stack(
@@ -469,10 +473,10 @@ class _MainChatPageState extends State<MainChatPage>
                       context: context,
                       builder:
                           (context) =>
-                              Center(child: LoadingAnimationWidget.fourRotatingDots(
-                                color: CupertinoColors.link,
-                                size: 24,
-                              ),),
+                          Center(child: LoadingAnimationWidget.fourRotatingDots(
+                            color: CupertinoColors.link,
+                            size: 24,
+                          ),),
                     );
 
                     //for seekBar in bottom
@@ -561,44 +565,44 @@ class _MainChatPageState extends State<MainChatPage>
                   },
                   itemBuilder:
                       (BuildContext context) =>
-                          List.from(_tripInformation['members'])
-                              .map(
-                                (item) => PopupMenuItem<String>(
-                                  value: item['_id'],
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue[100],
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(40),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.blue[200],
-                                          radius: 20,
-                                          child: Text(
-                                            item['name'][0].toUpperCase(),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 3),
-                                        Text(
-                                          item['name'],
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                      ],
+                      List.from(_tripInformation['members'])
+                          .map(
+                            (item) => PopupMenuItem<String>(
+                          value: item['_id'],
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.blue[100],
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(40),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.blue[200],
+                                  radius: 20,
+                                  child: Text(
+                                    item['name'][0].toUpperCase(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
-                              )
-                              .toList(),
+                                SizedBox(width: 3),
+                                Text(
+                                  item['name'],
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                          .toList(),
                 ),
 
                 // InkWell(
@@ -684,8 +688,8 @@ class _MainChatPageState extends State<MainChatPage>
                 child: Container(
                   padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    color: Color(0xb54ba6ee)
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      color: Color(0xb54ba6ee)
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,

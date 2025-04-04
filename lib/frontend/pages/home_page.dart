@@ -313,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                                                               _email.text
                                                                   .toLowerCase(),
                                                       orElse: () => null,
-                                                    )
+                                                    )['_id']
                                                     .toString();
 
                                             if (userMemberId != null) {
