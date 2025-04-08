@@ -18,9 +18,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(iconTheme: IconThemeData(color:Colors.white70 )),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: HomePage(),
+      home:
+      HomePage(),
       // home: MainChatPage(tripId: '67ec1edd7af705f2c2b8d5ed', defaultUserId: '67ec1edc7af705f2c2b8d5eb'),
     );
   }

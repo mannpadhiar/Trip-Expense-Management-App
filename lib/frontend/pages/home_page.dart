@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[150],
+      backgroundColor: Color(0xff041c32),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -106,14 +106,14 @@ class _HomePageState extends State<HomePage> {
                 //header
                 Text(
                   'Expense Manager',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900,color: Color(0xfff8f4ee)),
                 ),
                 Text(
                   'Manage your group expenses effortlessly',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w300,
-                    color: Colors.black54,
+                    color: Color(0xd8f8f4ee),
                   ),
                 ),
                 SizedBox(height: 40),
@@ -443,93 +443,107 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 SizedBox(height: 40),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.history,
-                          size: 28,
-                          color: Colors.deepPurpleAccent,
-                        ),
-                        SizedBox(width: 2),
-                        Text(
-                          'Resent Trips',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xff365486),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.history,
+                            size: 28,
+                            color: Color(0xffff9900),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    _resentTrips.isEmpty
-                        ? Center(child: Text('No recent Trip'))
-                        :ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _resentTrips.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: _resentTrips[index]['tripId'], defaultUserId: _resentTrips[index]['userId']),));
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 10,
+                          SizedBox(width: 2),
+                          Text(
+                            'Resent Trips',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xffe8e2da),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      _resentTrips.isEmpty ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.account_balance_wallet_outlined,size: 50,color: Color(0x71e8e2da),),
+                          Text('No recent trips',style: TextStyle(color: Color(0x71e8e2da)),),
+                          ],
+                        )
+                          :ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _resentTrips.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: _resentTrips[index]['tripId'], defaultUserId: _resentTrips[index]['userId']),));
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 10,
+                                        ),
+                                      ],
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(12),
                                       ),
-                                    ],
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        //name and members
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _resentTrips[index]['tripName'],
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            ///members
+                                            Row(
+                                              children: [
+                                                Icon(Icons.group,size: 18,color: Colors.black54),
+                                                SizedBox(width: 3,),
+                                                Text('4 members',style: TextStyle(color: Colors.black54),),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.currency_rupee,size: 16,color: Colors.green,),
+                                            Text('20000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //name and members
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            _resentTrips[index]['tripName'],
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          ///members
-                                          Row(
-                                            children: [
-                                              Icon(Icons.group,size: 18,color: Colors.black54),
-                                              SizedBox(width: 3,),
-                                              Text('4 members',style: TextStyle(color: Colors.black54),),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.currency_rupee,size: 16,color: Colors.green,),
-                                          Text('20000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
                                 ),
-                              ),
-                            );
-                      },
-                    ),
-                  ],
+                              );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

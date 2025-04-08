@@ -1,6 +1,5 @@
 // import 'dart:ffi';
 import 'dart:convert';
-
 import 'package:expances_management_app/backend/api_services.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,7 +20,12 @@ class MainChatPage extends StatefulWidget {
 class _MainChatPageState extends State<MainChatPage>
     with SingleTickerProviderStateMixin {
   //who is user come from previous page initialize in init state
+  
+  Color primaryColor = Color(0xff041C32);
+  Color secondaryColor = Color(0xff4DA1A9);
+  
   late String _userSelectFromButton;
+  late String _userSelectFromButtonName;
 
   late TabController _tabController;
   late ApiService api;
@@ -44,15 +48,23 @@ class _MainChatPageState extends State<MainChatPage>
 
   double _totalSpent = 0;
 
+  bool isUserFetched = false;
+
+  void setUserName(){
+    _userSelectFromButtonName = _tripInformation['members'].firstWhere(
+      (member) => member['_id'] == widget.defaultUserId,
+      orElse: () => '!',
+    )['name'];
+    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^$_userSelectFromButtonName');
+  }
 
   Future<Map<String, dynamic>> fetchTripInfo() async {
     final info = await api.getTripInfo(widget.tripId);
     setState(() {
       _tripInformation = info;
     });
-    print(_tripInformation);
-
-    print('@#@#@#@#@#@#@#@#@#@#@#@#@##@${(widget.defaultUserId)}');
+    if(!isUserFetched)setUserName();
+    isUserFetched = true;
 
     //for select all person in selection of distribution
     selectedPersons = List<Map<String, dynamic>>.from(
@@ -112,13 +124,13 @@ class _MainChatPageState extends State<MainChatPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Color(0xfff8f4ee),
       appBar: AppBar(
-        backgroundColor: CupertinoColors.link,
+        backgroundColor: primaryColor,
         title: Text(
           'Trip Expenses',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 24,
             fontWeight: FontWeight.w600,
           ),
@@ -181,7 +193,7 @@ class _MainChatPageState extends State<MainChatPage>
   Widget _headerOfPage() {
     return Container(
       decoration: BoxDecoration(
-        color: CupertinoColors.link,
+        color: primaryColor,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -281,7 +293,7 @@ class _MainChatPageState extends State<MainChatPage>
           ),
         ],
         indicator: BoxDecoration(
-          color: CupertinoColors.link,
+          color: primaryColor,
           borderRadius: BorderRadius.all(Radius.circular(25)),
         ),
         labelColor: Colors.white,
@@ -338,7 +350,7 @@ class _MainChatPageState extends State<MainChatPage>
                                           topLeft: Radius.circular(4),
                                           bottomLeft: Radius.circular(30),
                                         ),
-                                        color: Colors.blueAccent,
+                                        color: secondaryColor,
                                       ),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,7 +398,7 @@ class _MainChatPageState extends State<MainChatPage>
                                                     widthFactor: .6,
                                                     child: CircleAvatar(
                                                       radius: 12,
-                                                      backgroundColor: Colors.blueAccent,
+                                                      backgroundColor: secondaryColor,
                                                       child: CircleAvatar(
                                                         backgroundColor: Colors.white,
                                                         radius: 10,
@@ -406,7 +418,7 @@ class _MainChatPageState extends State<MainChatPage>
                                     right: isRightSide ? 0 : null,
                                     left: isRightSide ? null : 0,
                                     child: CircleAvatar(
-                                      backgroundColor: Colors.black,
+                                      backgroundColor: Color(0xff041C32),
                                       radius: 20,
                                       child: Text(
                                         _transactionsInformation[index]['paidBy']['name'][0].toUpperCase(),
@@ -438,7 +450,7 @@ class _MainChatPageState extends State<MainChatPage>
   Widget _footerPart() {
     return Container(
       decoration: BoxDecoration(
-        color: CupertinoColors.link,
+        color: primaryColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -462,7 +474,7 @@ class _MainChatPageState extends State<MainChatPage>
                       hintTextDirection: TextDirection.ltr,
                       hintStyle: TextStyle(color: Colors.white60),
                       filled: true,
-                      fillColor: CupertinoColors.link,
+                      fillColor: primaryColor,
                       border: OutlineInputBorder(borderSide: BorderSide.none),
                     ),
                   ),
@@ -474,7 +486,7 @@ class _MainChatPageState extends State<MainChatPage>
                       builder:
                           (context) =>
                           Center(child: LoadingAnimationWidget.fourRotatingDots(
-                            color: CupertinoColors.link,
+                            color: primaryColor,
                             size: 24,
                           ),),
                     );
@@ -504,7 +516,6 @@ class _MainChatPageState extends State<MainChatPage>
                       _tripDescriptionController.clear();
                     }
                     else {
-
                       if(_tripAmountController.text.isEmpty){
                         showScaffoldMessenger(
                           'Enter your Amount',
@@ -554,8 +565,22 @@ class _MainChatPageState extends State<MainChatPage>
                   initialValue: _userSelectFromButton,
                   icon: CircleAvatar(
                     radius: 23,
-                    backgroundColor: Colors.black87,
-                    child: Icon(Icons.person, color: Colors.white, size: 24),
+                    backgroundColor: Color(0xffF2EFE7),
+                    child: FutureBuilder(
+                      future: futureTripInfo,
+                      builder: (context, snapshot) {
+                         if(snapshot.connectionState == ConnectionState.waiting){
+                           return CircularProgressIndicator(color: Colors.white,);
+                         }
+                         if(snapshot.hasError){
+                           return Text('There is an error');
+                         }
+                         if(snapshot.hasData){
+                           return Text(_userSelectFromButtonName[0].toUpperCase(),style: TextStyle(color: Colors.black,fontSize: 18,fontWeight: FontWeight.w800),);
+                         }
+                         return Text('!!');
+                      },
+                    ),
                   ),
                   onSelected: (value) {
                     setState(() {
@@ -569,6 +594,11 @@ class _MainChatPageState extends State<MainChatPage>
                           .map(
                             (item) => PopupMenuItem<String>(
                           value: item['_id'],
+                          onTap: () {
+                            setState(() {
+                              _userSelectFromButtonName = item['name'];
+                            });
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.blue[100],
@@ -660,9 +690,28 @@ class _MainChatPageState extends State<MainChatPage>
                       children: [
                         Icon(Icons.people, color: Colors.white, size: 18),
                         SizedBox(width: 4),
-                        Text(
-                          'Split',
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+
+                        FutureBuilder(
+                          future: futureTripInfo,
+                          builder: (context, snapshot) {
+                            if(snapshot.connectionState == ConnectionState.waiting){
+                              return Container(
+                                height:20,
+                                width: 20,
+                                child: CircularProgressIndicator(color: Colors.white),
+                              );
+                            }
+                            if(snapshot.hasError){
+                              return Text('There is an error');
+                            }
+                            if(snapshot.hasData){
+                              return Text(
+                                _tripInformation['members'].length == selectedPersons.length ? "All" : selectedPersons.length.toString(),
+                                style: TextStyle(color: Colors.white, fontSize: 14),
+                              );
+                            }
+                            return Text('!!');
+                          },
                         ),
                       ],
                     ),
@@ -688,8 +737,11 @@ class _MainChatPageState extends State<MainChatPage>
                 child: Container(
                   padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                      color: Color(0xb54ba6ee)
+                      borderRadius: BorderRadius.all(Radius.circular(18)),
+                      border: Border(
+                        left: BorderSide(color: primaryColor,width: 8),
+                      ),
+                      color: Color(0xe44da1a9),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -711,7 +763,7 @@ class _MainChatPageState extends State<MainChatPage>
                         padding: EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                         child: Row(
                           children: [
@@ -755,7 +807,7 @@ class _MainChatPageState extends State<MainChatPage>
           builder: (context, setState) {
             return AlertDialog(
               title: Text('Split with'),
-              content: Container(
+              content: SizedBox(
                 width: double.maxFinite,
                 child: ListView.builder(
                   shrinkWrap: true,
@@ -767,13 +819,14 @@ class _MainChatPageState extends State<MainChatPage>
                       title: Text(person['name']),
                       value: isSelected,
                       onChanged: (bool? value) {
-                        if (value == true) {
-                          selectedPersons.add(person);
-                        } else {
-                          selectedPersons.remove(person);
-                        }
+                        setState(() {
+                          if (value == true) {
+                            selectedPersons.add(person);
+                          } else {
+                            selectedPersons.remove(person);
+                          }
+                        });
                         print(selectedPersons);
-                        setState(() {});
                       },
                     );
                   },
@@ -789,8 +842,9 @@ class _MainChatPageState extends State<MainChatPage>
                 TextButton(
                   child: Text('OK'),
                   onPressed: () {
+                    setState(() {},);
+                    Navigator.of(context).pop();
                     print('--------------$selectedPersons');
-                    Navigator.of(context).pop(selectedPersons);
                   },
                 ),
               ],
