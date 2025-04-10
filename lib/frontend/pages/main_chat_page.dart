@@ -588,51 +588,49 @@ class _MainChatPageState extends State<MainChatPage>
                     });
                     print('User selected : $_userSelectFromButton');
                   },
-                  itemBuilder:
-                      (BuildContext context) =>
-                      List.from(_tripInformation['members'])
-                          .map(
-                            (item) => PopupMenuItem<String>(
-                          value: item['_id'],
-                          onTap: () {
-                            setState(() {
-                              _userSelectFromButtonName = item['name'];
-                            });
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue[100],
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(40),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.start,
-                              crossAxisAlignment:
-                              CrossAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.blue[200],
-                                  radius: 20,
-                                  child: Text(
-                                    item['name'][0].toUpperCase(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 3),
-                                Text(
-                                  item['name'],
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              ],
+                  itemBuilder: (BuildContext context) =>
+                      List.from(_tripInformation['members']).map(
+                          (item) => PopupMenuItem<String>(
+                        value: item['_id'],
+                        onTap: () {
+                          setState(() {
+                            _userSelectFromButtonName = item['name'];
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xd84da1a9),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(40),
                             ),
                           ),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.start,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: primaryColor,
+                                radius: 20,
+                                child: Text(
+                                  item['name'][0].toUpperCase(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 3),
+                              Text(
+                                item['name'],
+                                style: TextStyle(fontSize: 14,color: Colors.black),
+                              ),
+                            ],
+                          ),
                         ),
-                      )
-                          .toList(),
+                      ),
+                    ).toList(),
                 ),
 
                 // InkWell(

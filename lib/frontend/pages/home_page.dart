@@ -494,7 +494,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Container(
                                     padding: EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: Color(0xffe8e2da),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black12,
@@ -517,14 +517,16 @@ class _HomePageState extends State<HomePage> {
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w500,
+                                                color: Color(0xff041c32)
                                               ),
                                             ),
                                             ///members
                                             Row(
                                               children: [
-                                                Icon(Icons.group,size: 18,color: Colors.black54),
+                                                Icon(Icons.group,size: 18,color: Color(
+                                                    0xff2c1b03)),
                                                 SizedBox(width: 3,),
-                                                Text('4 members',style: TextStyle(color: Colors.black54),),
+                                                Text('4 members',style: TextStyle(color: Color(0xff4b4b4b)),),
                                               ],
                                             )
                                           ],

@@ -16,6 +16,9 @@ class CreateTripPage extends StatefulWidget {
 
 class _CreateTripPageState extends State<CreateTripPage> {
 
+  Color primaryColor = Color(0xff041C32);
+  Color secondaryColor = Color(0xff4DA1A9);
+
   final TextEditingController _groupName = TextEditingController();
   final TextEditingController _createByName = TextEditingController();
   final TextEditingController _createByEmail = TextEditingController();
@@ -130,7 +133,8 @@ class _CreateTripPageState extends State<CreateTripPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Trip'),backgroundColor: CupertinoColors.link,),
+      backgroundColor: Color(0xfff6ecdd),
+      appBar: AppBar(title: Text('Create Trip',style: TextStyle(color: Colors.white),),backgroundColor: primaryColor,shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -143,7 +147,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                 SizedBox(height: 20,),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -171,19 +175,27 @@ class _CreateTripPageState extends State<CreateTripPage> {
     );
   }
 
-  Widget _tripDetailsCard(){
+  Widget _tripDetailsCard() {
     return Card(
       elevation: 0,
-      color: Color(0xc5a0b0ee),
-      shape: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)),borderSide: BorderSide.none),
+      color: Color(0xffb1d7d9),
+      shape: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderSide: BorderSide.none,
+      ),
       child: Column(
         children: [
-          //trip details card details
+          // trip details card header
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+              color: primaryColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
             ),
             child: Row(
               children: [
@@ -192,78 +204,112 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   radius: 22,
                   child: Icon(
                     Icons.explore,
-                    color: Colors.black,
+                    color: primaryColor,
                     size: 22,
                   ),
                 ),
-                const SizedBox(width: 12,),
-                Text('Trip Details',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),),
+                const SizedBox(width: 12),
+                Text(
+                  'Trip Details',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
+
+          // form content
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //user name
+                // user name
                 Padding(
                   padding: const EdgeInsets.all(5.0),
-                  child: Text('Name : ',style: TextStyle(fontSize: 15),),
+                  child: Text(
+                    'Name : ',
+                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
+                  ),
                 ),
                 TextFormField(
                   controller: _createByName,
-                  decoration: buildInputDecoration('Enter your name',Icons.person),
+                  decoration: buildInputDecoration(
+                    'Enter your name',
+                    Icons.person,
+                  ),
                 ),
 
-                //user email
+                // user email
                 Padding(
                   padding: const EdgeInsets.all(5.0),
-                  child: Text('Email : ',style: TextStyle(fontSize: 15),),
+                  child: Text(
+                    'Email : ',
+                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
+                  ),
                 ),
                 TextFormField(
                   controller: _createByEmail,
-                  decoration: buildInputDecoration('Enter your Email',Icons.email),
+                  decoration: buildInputDecoration(
+                    'Enter your Email',
+                    Icons.email,
+                  ),
                 ),
 
-                //trip name
+                // trip name
                 Padding(
                   padding: const EdgeInsets.all(5.0),
-                  child: Text('Trip Name:',style: TextStyle(fontSize: 15),),
+                  child: Text(
+                    'Trip Name:',
+                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
+                  ),
                 ),
                 TextFormField(
                   controller: _groupName,
-                  decoration: buildInputDecoration('Enter your trip name',Icons.travel_explore),
+                  decoration: buildInputDecoration(
+                    'Enter your trip name',
+                    Icons.travel_explore,
+                  ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _tripMembersCard(){
+  Widget _tripMembersCard() {
     return Card(
       elevation: 0,
-      color: Color(0xc5a4b3ee),
-      shape: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)),borderSide: BorderSide.none),
+      color: Color(0xffb1d7d9),
+      shape: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderSide: BorderSide.none,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //trip members card details
+          // Header
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+              color: primaryColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                //for icon and text
                 Row(
                   children: [
                     CircleAvatar(
@@ -271,15 +317,21 @@ class _CreateTripPageState extends State<CreateTripPage> {
                       radius: 22,
                       child: Icon(
                         Icons.group_rounded,
-                        color: Colors.black,
+                        color: primaryColor,
                         size: 22,
                       ),
                     ),
-                    const SizedBox(width: 12,),
-                    Text('Trip Members',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Trip Members',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ],
                 ),
-
                 AnimatedSwitcher(
                   duration: Duration(milliseconds: 200),
                   switchInCurve: Curves.easeInQuad,
@@ -291,11 +343,16 @@ class _CreateTripPageState extends State<CreateTripPage> {
                         _isAddingUser = !_isAddingUser;
                       });
                     },
-                    icon: _isAddingUser?Icon(Icons.close,color: Colors.black,):Icon(Icons.person_add,color: Colors.black,),
-                    label: Text(_isAddingUser?'Cancel':'Add',style: TextStyle(color:Colors.black),),
+                    icon: _isAddingUser
+                        ? Icon(Icons.close, color: primaryColor)
+                        : Icon(Icons.person_add, color: primaryColor),
+                    label: Text(
+                      _isAddingUser ? 'Cancel' : 'Add',
+                      style: TextStyle(color: primaryColor),
+                    ),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      backgroundColor: Colors.lightBlueAccent.withOpacity(0.5),
+                      backgroundColor: Color(0xff4DA1A9).withOpacity(0.8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
@@ -306,136 +363,166 @@ class _CreateTripPageState extends State<CreateTripPage> {
             ),
           ),
 
-          //add new user part
+          // Add new user section
           AnimatedCrossFade(
-            firstChild: SizedBox(height: 0,),
+            firstChild: SizedBox(height: 0),
             secondChild: _tripMemberCardAddUser(),
-            crossFadeState: _isAddingUser? CrossFadeState.showSecond:CrossFadeState.showFirst,
-            duration: Duration(milliseconds: 300)
+            crossFadeState:
+            _isAddingUser ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: Duration(milliseconds: 300),
           ),
 
-          //list of members
+          // User list section
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Select Members',style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                SizedBox(height: 8,),
+                Text(
+                  'Select Members',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: primaryColor,
+                  ),
+                ),
+                SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
-                    color: Color(0xa3a0b0ee),
+                    color: Color(0xffd2edf0),
                   ),
-                  child: ClipRRect(
+                  child:_users.isEmpty ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(child: Text('Enter the user first')),
+                  ) :  ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
-                    child: ListView.separated(
+                    child:ListView.separated(
                       shrinkWrap: true,
                       itemCount: _users.length,
                       itemBuilder: (context, index) {
                         final user = _users[index];
                         return ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.blueAccent,
+                            backgroundColor: Color(0xff4DA1A9),
                             child: Text(
                               user['userName']![0].toUpperCase(),
-                              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                          title: Text(user['userName'],style: TextStyle(fontWeight: FontWeight.w600),),
-                          subtitle: Text(user['userEmail']),
+                          title: Text(
+                            user['userName'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xff041C32),
+                            ),
+                          ),
+                          subtitle: Text(
+                            user['userEmail'],
+                            style: TextStyle(color: Color(0xff3b7f84)),
+                          ),
                           trailing: Checkbox(
                             value: _selectedMembers.contains(user['userId']),
                             onChanged: (value) {
-                              if(value == true){
-                                setState(() {
+                              setState(() {
+                                if (value == true) {
                                   _selectedMembers.add(user['userId']);
-                                });
-                              }else{
-                                setState(() {
+                                } else {
                                   _selectedMembers.remove(user['userId']);
-                                });
-                              }
+                                }
+                              });
                             },
-                            activeColor: Colors.blue,
-                            checkColor: Colors.black,
+                            activeColor: Color(0xff4DA1A9),
+                            checkColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5 ),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
                         );
                       },
                       separatorBuilder: (context, index) => Divider(
                         height: 1,
-                        color: Colors.blue.withOpacity(0.3),
+                        color: Color(0xff4DA1A9).withOpacity(0.3),
                         indent: 16,
                         endIndent: 16,
                       ),
                     ),
-                  )
-                )
+                  ),
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget _tripMemberCardAddUser(){
+  Widget _tripMemberCardAddUser() {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Container(
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(12)),
-          color: Color(0xbd5483ec)
+          color: Color(0xffc7e9ec),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //user name
+            // user name
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text('Name : ',style: TextStyle(fontSize: 15),),
+              child: Text(
+                'Name : ',
+                style: TextStyle(fontSize: 15, color: primaryColor),
+              ),
             ),
             TextFormField(
               controller: _newUserName,
-              decoration: buildInputDecoration('Enter your name',Icons.person),
+              decoration: buildInputDecoration('Enter your name', Icons.person),
             ),
-            SizedBox(height: 3,),
-            //user email
+            SizedBox(height: 3),
+            // user email
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Text('Email : ',style: TextStyle(fontSize: 15),),
+              child: Text(
+                'Email : ',
+                style: TextStyle(fontSize: 15, color: primaryColor),
+              ),
             ),
             TextFormField(
               controller: _newUserEmail,
-              decoration: buildInputDecoration('Enter your Email',Icons.email),
+              decoration: buildInputDecoration('Enter your Email', Icons.email),
             ),
-            SizedBox(height: 30,),
+            SizedBox(height: 30),
 
-            //new user add button
+            // button
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     showDialog(
                       context: context,
-                      builder: (context) => Center(child: LoadingAnimationWidget.fourRotatingDots(
-                        color: CupertinoColors.link,
-                        size: 24,
-                      ),),
+                      builder: (context) => Center(
+                        child: LoadingAnimationWidget.fourRotatingDots(
+                          color: CupertinoColors.link,
+                          size: 24,
+                        ),
+                      ),
                     );
-                    if(_newUserEmail.text.isNotEmpty && _newUserName.text.isNotEmpty){
-                      final id = await apiService.addUser(_newUserName.text, _newUserEmail.text);
+                    if (_newUserEmail.text.isNotEmpty &&
+                        _newUserName.text.isNotEmpty) {
+                      final id = await apiService.addUser(
+                          _newUserName.text, _newUserEmail.text);
                       await sqlDatabase.addDataUserSqlDatabase({
-                        'userId' : id,
-                        'userName' : _newUserName.text,
-                        'userEmail' : _newUserEmail.text
+                        'userId': id,
+                        'userName': _newUserName.text,
+                        'userEmail': _newUserEmail.text,
                       });
                       _newUserEmail.clear();
                       _newUserName.clear();
@@ -443,16 +530,19 @@ class _CreateTripPageState extends State<CreateTripPage> {
                         _isAddingUser = false;
                       });
                       getUsersFromSqlDatabase();
-                    }
-                    else{
-                      if(_newUserEmail.text.isEmpty){
+                    } else {
+                      if (_newUserEmail.text.isEmpty) {
                         showScaffoldMessenger('Enter your name', Colors.red);
-                      }else{
+                      } else {
                         showScaffoldMessenger('Enter your Email', Colors.red);
                       }
                     }
                     Navigator.of(context).pop();
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xff4DA1A9),
+                    foregroundColor: Colors.white,
+                  ),
                   child: Text('Add User'),
                 ),
               ],
@@ -462,5 +552,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
       ),
     );
   }
+
 }
 
