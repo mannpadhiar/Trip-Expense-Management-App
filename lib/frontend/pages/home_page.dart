@@ -17,7 +17,6 @@ class _HomePageState extends State<HomePage> {
   String? userId = '';
   TextEditingController _tripId = TextEditingController();
   TextEditingController _name = TextEditingController();
-  TextEditingController _email = TextEditingController();
 
   // List<Map<String, dynamic>> tripInfoFromSql = [];
   late List<Map<String,dynamic>> _resentTrips = [];
@@ -36,7 +35,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _resentTrips = fetchedUsers;
     });
-    print('-+-+-+-+-+-+++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+$_resentTrips');
   }
 
   Future<void> createSQLResentTrip(String userId,String tripId,String tripName) async{
@@ -47,6 +45,7 @@ class _HomePageState extends State<HomePage> {
         'tripName' : tripName
       });
     }
+    await getTripFromSqlDatabase();
   }
 
 
@@ -278,9 +277,7 @@ class _HomePageState extends State<HomePage> {
                                       padding: EdgeInsets.all(16.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          if (_tripId.text.isNotEmpty &&
-                                              _name.text.isNotEmpty &&
-                                              _email.text.isNotEmpty) {
+                                          if (_tripId.text.isNotEmpty && _name.text.isNotEmpty) {
                                             showDialog(
                                               context: context,
                                               builder: (context) => Center(
@@ -298,23 +295,10 @@ class _HomePageState extends State<HomePage> {
                                                 await api.getTripInfo(
                                                   _tripId.text,
                                                 );
-                                            var userMemberId =
-                                                tripInfo['members']
-                                                    .firstWhere(
-                                                      (member) =>
-                                                          member['name']
-                                                                  .toString()
-                                                                  .toLowerCase() ==
-                                                              _name.text
-                                                                  .toLowerCase() &&
-                                                          member['email']
-                                                                  .toString()
-                                                                  .toLowerCase() ==
-                                                              _email.text
-                                                                  .toLowerCase(),
-                                                      orElse: () => null,
-                                                    )['_id']
-                                                    .toString();
+                                            var userMemberId = tripInfo['members'].firstWhere(
+                                                (member) => member['name'].toString().toLowerCase() == _name.text.toLowerCase(),
+                                                orElse: () => null,
+                                              )['_id'].toString();
 
                                             if (userMemberId != null) {
                                               Navigator.of(context).pop();
@@ -335,7 +319,6 @@ class _HomePageState extends State<HomePage> {
                                             } else {
                                               userId = await api.addUser(
                                                 _name.text,
-                                                _email.text,
                                               );
                                               await api.addMemberToTrip(
                                                 _tripId.text,
@@ -357,8 +340,6 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               );
                                             }
-
-
                                           } else {
                                             showScaffoldMessenger(
                                               'Enter your Trip Id',
@@ -471,14 +452,16 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                       SizedBox(height: 20),
-                      _resentTrips.isEmpty ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.account_balance_wallet_outlined,size: 50,color: Color(0x71e8e2da),),
-                          Text('No recent trips',style: TextStyle(color: Color(0x71e8e2da)),),
-                          ],
-                        )
+                      _resentTrips.isEmpty ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.account_balance_wallet_outlined,size: 50,color: Color(0x71e8e2da),),
+                            Text('No recent trips',style: TextStyle(color: Color(0x71e8e2da)),),
+                            ],
+                          ),
+                      )
                           :ListView.builder(
                         shrinkWrap: true,
                         itemCount: _resentTrips.length,
@@ -637,39 +620,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(height: 16),
-
-                // Email field
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    'Email',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                TextFormField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email, color: Colors.blueAccent),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.blueAccent,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 16.0),
-                  ),
-                ),
 
                 // Instructions
                 Padding(

@@ -21,9 +21,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
 
   final TextEditingController _groupName = TextEditingController();
   final TextEditingController _createByName = TextEditingController();
-  final TextEditingController _createByEmail = TextEditingController();
   final TextEditingController _newUserName = TextEditingController();
-  final TextEditingController _newUserEmail = TextEditingController();
 
   List<Map<String,dynamic>> _users = [];
   List<Map<String,dynamic>> _resentTrips = [];
@@ -75,7 +73,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
   //
 
   Future<void> createTripGroup() async{
-    if(_groupName.text.isNotEmpty && _createByEmail.text.isNotEmpty && _selectedMembers.isNotEmpty){
+    if(_groupName.text.isNotEmpty && _selectedMembers.isNotEmpty){
       showDialog(
         context: context,
         builder: (context) => Center(child: LoadingAnimationWidget.fourRotatingDots(
@@ -84,7 +82,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
         ),),
       );
 
-      final selectedId = await apiService.addUser(_createByName.text, _createByEmail.text);
+      final selectedId = await apiService.addUser(_createByName.text);
       _selectedMembers.add(selectedId??'none');
       tripIdSelected = await apiService.createTrip(_groupName.text, selectedId!, _selectedMembers);
 
@@ -96,8 +94,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
     }else{
       if(_groupName.text.isEmpty){
         showScaffoldMessenger('Enter your group name',Colors.red);
-      }else if(_createByEmail.text.isEmpty){
-        showScaffoldMessenger('Enter your Email',Colors.red);
       }else{
         showScaffoldMessenger('Select atleast one member',Colors.red);
       }
@@ -241,22 +237,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   decoration: buildInputDecoration(
                     'Enter your name',
                     Icons.person,
-                  ),
-                ),
-
-                // user email
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Text(
-                    'Email : ',
-                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
-                  ),
-                ),
-                TextFormField(
-                  controller: _createByEmail,
-                  decoration: buildInputDecoration(
-                    'Enter your Email',
-                    Icons.email,
                   ),
                 ),
 
@@ -421,10 +401,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
                               color: Color(0xff041C32),
                             ),
                           ),
-                          subtitle: Text(
-                            user['userEmail'],
-                            style: TextStyle(color: Color(0xff3b7f84)),
-                          ),
                           trailing: Checkbox(
                             value: _selectedMembers.contains(user['userId']),
                             onChanged: (value) {
@@ -485,19 +461,6 @@ class _CreateTripPageState extends State<CreateTripPage> {
               controller: _newUserName,
               decoration: buildInputDecoration('Enter your name', Icons.person),
             ),
-            SizedBox(height: 3),
-            // user email
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Text(
-                'Email : ',
-                style: TextStyle(fontSize: 15, color: primaryColor),
-              ),
-            ),
-            TextFormField(
-              controller: _newUserEmail,
-              decoration: buildInputDecoration('Enter your Email', Icons.email),
-            ),
             SizedBox(height: 30),
 
             // button
@@ -515,27 +478,19 @@ class _CreateTripPageState extends State<CreateTripPage> {
                         ),
                       ),
                     );
-                    if (_newUserEmail.text.isNotEmpty &&
-                        _newUserName.text.isNotEmpty) {
-                      final id = await apiService.addUser(
-                          _newUserName.text, _newUserEmail.text);
+                    if (_newUserName.text.isNotEmpty) {
+                      final id = await apiService.addUser(_newUserName.text);
                       await sqlDatabase.addDataUserSqlDatabase({
                         'userId': id,
                         'userName': _newUserName.text,
-                        'userEmail': _newUserEmail.text,
                       });
-                      _newUserEmail.clear();
                       _newUserName.clear();
                       setState(() {
                         _isAddingUser = false;
                       });
                       getUsersFromSqlDatabase();
                     } else {
-                      if (_newUserEmail.text.isEmpty) {
-                        showScaffoldMessenger('Enter your name', Colors.red);
-                      } else {
-                        showScaffoldMessenger('Enter your Email', Colors.red);
-                      }
+                        showScaffoldMessenger('Enter your Name', Colors.red);
                     }
                     Navigator.of(context).pop();
                   },

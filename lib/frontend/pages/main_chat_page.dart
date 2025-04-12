@@ -1,6 +1,7 @@
 // import 'dart:ffi';
 import 'dart:convert';
 import 'package:expances_management_app/backend/api_services.dart';
+import 'package:intl/intl.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -383,9 +384,9 @@ class _MainChatPageState extends State<MainChatPage>
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
+                                          SizedBox(height: 4,),
 
                                           //distribution to part
-                                          SizedBox(height: 4,),
                                           IntrinsicWidth(
                                             child: Row(
                                               children: [
@@ -408,7 +409,11 @@ class _MainChatPageState extends State<MainChatPage>
                                                   )
                                               ],
                                             ),
-                                          )
+                                          ),
+                                          SizedBox(height: 4,),
+
+                                          //date-time
+                                          Text(DateFormat('EEE,dd MMM').format(DateTime.parse(_transactionsInformation[index]['createdDate']))),
                                         ],
                                       ),
                                     ),
@@ -471,7 +476,6 @@ class _MainChatPageState extends State<MainChatPage>
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'Enter Your Description...',
-                      hintTextDirection: TextDirection.ltr,
                       hintStyle: TextStyle(color: Colors.white60),
                       filled: true,
                       fillColor: primaryColor,

@@ -5,12 +5,12 @@ class ApiService{
   static const String baseUrl = 'https://trip-expense-management-app.onrender.com';
 
   //add a user in database
-  Future<String?> addUser(String name,String email) async{
+  Future<String?> addUser(String name) async{
     try{
       final response = await http.post(
         Uri.parse('$baseUrl/users'),
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({'name':name,'email':email}),
+        body: jsonEncode({'name':name}),
       );
 
       if(response.statusCode == 200 || response.statusCode == 201){
