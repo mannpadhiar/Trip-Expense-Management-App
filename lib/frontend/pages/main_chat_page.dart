@@ -315,7 +315,7 @@ class _MainChatPageState extends State<MainChatPage>
               //message part
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
                     children: [
                       Expanded(
@@ -391,8 +391,8 @@ class _MainChatPageState extends State<MainChatPage>
                                             child: Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.all(2.0),
-                                                  child: Text('To : '),
+                                                  padding: const EdgeInsets.all(4.0),
+                                                  child: Text('To : ',style: TextStyle(fontWeight: FontWeight.w600),),
                                                 ),
                                                 for(int i = 0; i < _transactionsInformation[index]['distributedTo'].length;i++)
                                                   Align(
@@ -413,7 +413,7 @@ class _MainChatPageState extends State<MainChatPage>
                                           SizedBox(height: 4,),
 
                                           //date-time
-                                          Text(DateFormat('EEE,dd MMM').format(DateTime.parse(_transactionsInformation[index]['createdDate']))),
+                                          Text(DateFormat('EEE,dd MMM').format(DateTime.parse(_transactionsInformation[index]['createdDate'])),style: TextStyle(fontWeight: FontWeight.w500),),
                                         ],
                                       ),
                                     ),
@@ -663,7 +663,7 @@ class _MainChatPageState extends State<MainChatPage>
                         hintText: 'Amount...',
                         hintStyle: TextStyle(
                           fontSize: 14,
-                          color: Colors.white54,
+                          color: Colors.white70,
                         ),
                         border: OutlineInputBorder(
                           borderSide: BorderSide.none,

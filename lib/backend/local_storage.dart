@@ -111,7 +111,7 @@ class SqlDatabase{
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               userId TEXT,
               tripId TEXT,
-              tripName TEXT
+              tripName TEXT,
             )
           ''');
         },
@@ -132,6 +132,18 @@ class SqlDatabase{
       await _tripDatabase.insert('tripDatabase', user);
     }catch(e){
       print('error while adding data in database : $e');
+    }
+  }
+
+  Future<void> deleteTripSqlDatabase(String id) async{
+    try{
+      await _tripDatabase.delete(
+        'tripDatabase',
+        where: 'id = ?',
+        whereArgs: [id]
+      );
+    }catch(e){
+        print('There is some error in deleting data in SQL database ');
     }
   }
 

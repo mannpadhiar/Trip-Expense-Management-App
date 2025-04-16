@@ -229,7 +229,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   padding: const EdgeInsets.all(5.0),
                   child: Text(
                     'Name : ',
-                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
+                    style: TextStyle(fontSize: 15, color: Color(0xff041C32),fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextFormField(
@@ -245,7 +245,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                   padding: const EdgeInsets.all(5.0),
                   child: Text(
                     'Trip Name:',
-                    style: TextStyle(fontSize: 15, color: Color(0xff041C32)),
+                    style: TextStyle(fontSize: 15, color: Color(0xff041C32),fontWeight: FontWeight.w600),
                   ),
                 ),
                 TextFormField(
@@ -454,7 +454,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
               padding: const EdgeInsets.all(5.0),
               child: Text(
                 'Name : ',
-                style: TextStyle(fontSize: 15, color: primaryColor),
+                style: TextStyle(fontSize: 15, color: primaryColor,fontWeight: FontWeight.w600),
               ),
             ),
             TextFormField(

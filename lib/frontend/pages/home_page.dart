@@ -38,14 +38,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> createSQLResentTrip(String userId,String tripId,String tripName) async{
-    if(!_resentTrips.any((element) => (element['userId'] == userId && element['tripId'] == tripId))){
-      await sqlDatabase.addDataTripSqlDatabase({
-        'userId' : userId,
-        'tripId' : tripId,
-        'tripName' : tripName
-      });
+    try{
+      if(!_resentTrips.any((element) => (element['userId'] == userId && element['tripId'] == tripId))){
+        await sqlDatabase.addDataTripSqlDatabase({
+          'userId' : userId,
+          'tripId' : tripId,
+          'tripName' : tripName,
+        });
+        print('hello brother!!!');
+      }
+      await getTripFromSqlDatabase();
+    }catch(e){
+      print('there is an error in creating SQLITE database $e');
     }
-    await getTripFromSqlDatabase();
   }
 
 
@@ -112,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w300,
-                    color: Color(0xd8f8f4ee),
+                    color: Color(0xffb7a282)
                   ),
                 ),
                 SizedBox(height: 40),
@@ -133,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: CupertinoColors.activeBlue,
+                          backgroundColor: CupertinoColors.link,
                           padding: EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 12,
@@ -157,6 +162,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
+
+                    //create trip button
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
@@ -167,8 +174,7 @@ class _HomePageState extends State<HomePage> {
                             backgroundColor: Colors.transparent,
                             builder: (context) {
                               return Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.8,
+                                height: MediaQuery.of(context).size.height * 0.75,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.only(
@@ -209,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
-                                          color: CupertinoColors.link,
+                                          color: Color(0xff041c32),
                                         ),
                                       ),
                                     ),
@@ -237,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                                           hintText: "Enter Trip ID",
                                           prefixIcon: Icon(
                                             Icons.tag,
-                                            color: CupertinoColors.link,
+                                            color: Color(0xff041c32),
                                           ),
                                           border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(
@@ -252,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                                               12,
                                             ),
                                             borderSide: BorderSide(
-                                              color: CupertinoColors.link,
+                                              color: Color(0xff041c32),
                                               width: 2,
                                             ),
                                           ),
@@ -283,9 +289,7 @@ class _HomePageState extends State<HomePage> {
                                               builder: (context) => Center(
                                                     child:
                                                         LoadingAnimationWidget.fourRotatingDots(
-                                                          color:
-                                                              CupertinoColors
-                                                                  .link,
+                                                          color: Color(0xff041c32),
                                                           size: 24,
                                                         ),
                                                   ),
@@ -315,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                                               );
 
                                               //for adding in resent trip
-                                              createSQLResentTrip(userMemberId,_tripId.text,tripInfo['name']);
+                                              await createSQLResentTrip(userMemberId,_tripId.text,tripInfo['name']);
                                             } else {
                                               userId = await api.addUser(
                                                 _name.text,
@@ -424,10 +428,12 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 SizedBox(height: 40),
+
+                //resent trip part
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Color(0xff365486),
+                    color: Color(0x79365486),
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
                   child: Column(
@@ -440,7 +446,7 @@ class _HomePageState extends State<HomePage> {
                             size: 28,
                             color: Color(0xffff9900),
                           ),
-                          SizedBox(width: 2),
+                          SizedBox(width: 4),
                           Text(
                             'Resent Trips',
                             style: TextStyle(
@@ -453,78 +459,102 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(height: 20),
                       _resentTrips.isEmpty ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.account_balance_wallet_outlined,size: 50,color: Color(0x71e8e2da),),
-                            Text('No recent trips',style: TextStyle(color: Color(0x71e8e2da)),),
-                            ],
-                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(Icons.account_balance_wallet_outlined,size: 50,color: Color(0x71e8e2da),),
+                              Text('No recent trips',style: TextStyle(color: Color(0x71e8e2da)),),
+                              ],
+                            ),
+                        ),
                       )
                           :ListView.builder(
                         shrinkWrap: true,
                         itemCount: _resentTrips.length,
                         itemBuilder: (context, index) {
                           return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 4.0,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: _resentTrips[index]['tripId'], defaultUserId: _resentTrips[index]['userId']),));
-                                  },
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4.0,
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainChatPage(tripId: _resentTrips[index]['tripId'], defaultUserId: _resentTrips[index]['userId']),));
+                              },
+                              child: Dismissible(
+                                key: UniqueKey(),
+                                onDismissed: (direction) async{
+                                  await sqlDatabase.deleteTripSqlDatabase(_resentTrips[index]['id'].toString());
+                                  await getTripFromSqlDatabase();
+                                },
+                                background: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Container(
-                                    padding: EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Color(0xffe8e2da),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 10,
-                                        ),
-                                      ],
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(12),
                                       ),
+                                      color: Colors.red,
                                     ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        //name and members
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              _resentTrips[index]['tripName'],
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xff041c32)
-                                              ),
-                                            ),
-                                            ///members
-                                            Row(
-                                              children: [
-                                                Icon(Icons.group,size: 18,color: Color(
-                                                    0xff2c1b03)),
-                                                SizedBox(width: 3,),
-                                                Text('4 members',style: TextStyle(color: Color(0xff4b4b4b)),),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(Icons.currency_rupee,size: 16,color: Colors.green,),
-                                            Text('20000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                    alignment: Alignment.centerLeft,
+                                    padding: EdgeInsets.symmetric(horizontal: 20),
+                                    child: Icon(Icons.delete, color: Colors.white),
                                   ),
                                 ),
-                              );
+                                child: Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffe8e2da),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 10,
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      //name and members
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _resentTrips[index]['tripName'],
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xff041c32)
+                                            ),
+                                          ),
+                                          ///members
+                                          Row(
+                                            children: [
+                                              Icon(Icons.group,size: 18,color: Color(
+                                                  0xff2c1b03)),
+                                              SizedBox(width: 3,),
+                                              Text('4 members',style: TextStyle(color: Color(0xff4b4b4b)),),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.currency_rupee,size: 16,color: Colors.green,),
+                                          Text('20000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -549,7 +579,7 @@ class _HomePageState extends State<HomePage> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.blueAccent,
+              color: Color(0xff041c32),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -565,7 +595,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: Icon(
                     Icons.explore,
-                    color: Colors.blueAccent,
+                    color: Color(0xff041c32),
                     size: 24,
                   ),
                 ),
@@ -604,7 +634,7 @@ class _HomePageState extends State<HomePage> {
                   controller: _name,
                   decoration: InputDecoration(
                     hintText: 'Enter your name',
-                    prefixIcon: Icon(Icons.person, color: Colors.blueAccent),
+                    prefixIcon: Icon(Icons.person, color: Color(0xff041c32)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey),
@@ -612,7 +642,7 @@ class _HomePageState extends State<HomePage> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: Colors.blueAccent,
+                        color: Color(0xff041c32),
                         width: 2,
                       ),
                     ),
@@ -627,19 +657,19 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Color(0xff041c32).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.blue.withOpacity(0.3)),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue),
+                        Icon(Icons.info_outline, color: Color(0xff041c32)),
                         SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Your information will only be shared with trip members',
                             style: TextStyle(
-                              color: Colors.blue[800],
+                              color: Color(0xc8041c32),
                               fontSize: 14,
                             ),
                           ),
