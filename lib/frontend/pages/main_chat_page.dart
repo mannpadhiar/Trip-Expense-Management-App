@@ -51,6 +51,20 @@ class _MainChatPageState extends State<MainChatPage>
 
   bool isUserFetched = false;
 
+  String shortenObjectId(String objectIdHex) {
+    final bytes = hexToBytes(objectIdHex);
+    return base64UrlEncode(bytes); // URL-safe Base64
+  }
+
+  List<int> hexToBytes(String hex) {
+    final result = <int>[];
+    for (var i = 0; i < hex.length; i += 2) {
+      result.add(int.parse(hex.substring(i, i + 2), radix: 16));
+    }
+    return result;
+  }
+
+
   void setUserName(){
     _userSelectFromButtonName = _tripInformation['members'].firstWhere(
       (member) => member['_id'] == widget.defaultUserId,
@@ -124,6 +138,7 @@ class _MainChatPageState extends State<MainChatPage>
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Color(0xfff8f4ee),
       appBar: AppBar(
@@ -159,14 +174,80 @@ class _MainChatPageState extends State<MainChatPage>
         },
       ),
 
-      endDrawer: Drawer(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Center(
+      endDrawer: SafeArea(
+        child: Drawer(
+          backgroundColor: Colors.white,
+          child: SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('QR code for trip'),
+                // Header with ID
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(40),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Trip ID:',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        _tripInformation['_id'].toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                ListTile(
+                  leading: const Icon(Icons.person, color: Colors.black),
+                  title: const Text(
+                    'Made by Your Name',
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                  ),
+                ),
+
+                const Spacer(),
+
+                // Leave button
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: secondaryColor,
+                      minimumSize: const Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.logout,color: Colors.white),
+                    label: const Text(
+                      'Leave Trip',
+                      style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.w600),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // or push to another screen
+                    },
+                  ),
+                )
               ],
             ),
           ),
@@ -202,61 +283,64 @@ class _MainChatPageState extends State<MainChatPage>
       ),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            //total spent side box
-            Column(
-              children: [
-                Text(
-                  'Total Spent',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.currency_rupee, size: 24, color: Colors.white),
-                    Text(
-                      _totalSpent.toString(),
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+        child: SafeArea(
+          bottom: false,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //total spent side box
+              Column(
+                children: [
+                  Text(
+                    'Total Spent',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Text(
-                  'Per Person',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w500,
                   ),
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.currency_rupee, size: 24, color: Colors.white),
-                    Text(
-                      (_totalSpent/selectedPersons.length).ceilToDouble().toString(),
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                  Row(
+                    children: [
+                      Icon(Icons.currency_rupee, size: 24, color: Colors.white),
+                      Text(
+                        _totalSpent.toString(),
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                    ],
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(
+                    'Per Person',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.currency_rupee, size: 24, color: Colors.white),
+                      Text(
+                        (_totalSpent/selectedPersons.length).ceilToDouble().toString(),
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
