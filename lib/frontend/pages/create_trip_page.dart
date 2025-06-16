@@ -411,6 +411,7 @@ class _CreateTripPageState extends State<CreateTripPage> {
                                   _selectedMembers.remove(user['userId']);
                                 }
                               });
+                              setState(() {});
                             },
                             activeColor: Color(0xff4DA1A9),
                             checkColor: Colors.white,
