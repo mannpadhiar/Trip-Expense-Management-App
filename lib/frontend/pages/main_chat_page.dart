@@ -1,6 +1,7 @@
 // import 'dart:ffi';
 import 'dart:convert';
 import 'package:expances_management_app/backend/api_services.dart';
+import 'package:expances_management_app/frontend/pages/home_page.dart';
 import 'package:intl/intl.dart';
 import '../expense_calculator.dart';
 import 'package:flutter/cupertino.dart';
@@ -143,7 +144,7 @@ class _MainChatPageState extends State<MainChatPage>
       backgroundColor: Color(0xfff8f4ee),
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title: Text(
+        title: const Text(
           'Trip Expenses',
           style: TextStyle(
             color: Colors.white,
@@ -244,7 +245,7 @@ class _MainChatPageState extends State<MainChatPage>
                       style: TextStyle(fontSize: 16,color: Colors.white,fontWeight: FontWeight.w600),
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop(); // or push to another screen
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),)); // or push to another screen
                     },
                   ),
                 )
@@ -892,45 +893,78 @@ class _MainChatPageState extends State<MainChatPage>
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Split with'),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _tripInformation['members'].length,
-                  itemBuilder: (context, index) {
-                    final person = _tripInformation['members'][index];
-                    final isSelected = selectedPersons.contains(person);
-                    return CheckboxListTile(
-                      title: Text(person['name']),
-                      value: isSelected,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value == true) {
-                            selectedPersons.add(person);
-                          } else {
-                            selectedPersons.remove(person);
-                          }
-                        });
-                        print(selectedPersons);
-                      },
-                    );
-                  },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Split with',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(thickness: 1),
+                ],
+              ),
+              content: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 300),
+                child: SizedBox(
+                  width: double.maxFinite,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _tripInformation['members'].length,
+                    itemBuilder: (context, index) {
+                      final person = _tripInformation['members'][index];
+                      final isSelected = selectedPersons.contains(person);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: CheckboxListTile(
+                          activeColor: primaryColor,
+                          dense: true,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          title: Text(person['name']),
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value == true) {
+                                selectedPersons.add(person);
+                              } else {
+                                selectedPersons.remove(person);
+                              }
+                            });
+                            print(selectedPersons);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
+              actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              actionsAlignment: MainAxisAlignment.end,
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
                   child: Text('Cancel'),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
-                TextButton(
-                  child: Text('OK'),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text('OK',style: TextStyle(color: primaryColor),),
                   onPressed: () {
-                    setState(() {},);
+                    setState(() {});
                     Navigator.of(context).pop();
-                    print('--------------$selectedPersons');
                   },
                 ),
               ],
