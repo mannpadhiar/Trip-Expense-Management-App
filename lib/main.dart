@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'frontend/pages/create_trip_page.dart';
 import 'frontend/pages/home_page.dart';
 import 'frontend/pages/main_chat_page.dart';
 import 'frontend/test.dart';
 
-void main() {
+void main() async{
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 

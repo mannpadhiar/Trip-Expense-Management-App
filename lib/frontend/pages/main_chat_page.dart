@@ -218,13 +218,6 @@ class _MainChatPageState extends State<MainChatPage>
 
                 const SizedBox(height: 30),
 
-                ListTile(
-                  leading: const Icon(Icons.person, color: Colors.black),
-                  title: const Text(
-                    'Made by Your Name',
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                ),
 
                 const Spacer(),
 

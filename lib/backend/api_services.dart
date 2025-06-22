@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService{
-  static const String baseUrl = 'https://trip-expense-management-app.onrender.com';
+  static String baseUrl = dotenv.env['BASE_URL']??" ";
 
   //add a user in database
   Future<String?> addUser(String name) async{
