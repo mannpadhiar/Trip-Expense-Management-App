@@ -433,6 +433,7 @@ class _HomePageState extends State<HomePage> {
                 Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white10,width: 4),
                     color: Color(0x79365486),
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                   ),
@@ -448,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           SizedBox(width: 4),
                           Text(
-                            'Resent Trips',
+                            'Recent Trips',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w500,
@@ -546,7 +547,7 @@ class _HomePageState extends State<HomePage> {
                                       Row(
                                         children: [
                                           Icon(Icons.currency_rupee,size: 16,color: Colors.green,),
-                                          Text('20000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
+                                          Text('2000',style: TextStyle(color: Colors.green,fontSize: 14,fontWeight: FontWeight.w600),),
                                         ],
                                       ),
                                     ],
