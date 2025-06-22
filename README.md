@@ -27,10 +27,10 @@ Stay tuned for updates!
 
 | Recent Trips | Join Trip |Create Trip |
 |-----------|---------------|-------------|
-| ![Recent Trips](screenshots/04_recent_trips.png) | ![Join Trip](screenshots/01_join_trip.png) | ![Create Trip](screenshots/05_create_trip.png) |
+| ![Recent Trips](screenshot/04_recent_trips.png) | ![Join Trip](screenshot/01_join_trip.png) | ![Create Trip](screenshot/05_create_trip.png) |
 
 | Expenses List                                     | Settlements | 
 |---------------------------------------------------|-------------|
-| ![Expenses List](screenshots/02_expense_list.png) | ![Settlements](screenshots/03_settle_up.png) |
+| ![Expenses List](screenshot/02_expense_list.png) | ![Settlements](screenshot/03_settle_up.png) |
 
 ---
