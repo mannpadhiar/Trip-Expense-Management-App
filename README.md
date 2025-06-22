@@ -1,16 +1,29 @@
-# expances_management_app
+# Trip Expense Manager
 
-A new Flutter project.
+A Flutter app to manage and split group expenses during trips. Add your expenses, track who paid, and see who owes how much — all in one place.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- Create or join a trip group
+- Add expenses with amount and description
+- Auto-calculates expense split between members
+- Shows detailed who-pays-whom breakdown
+- Displays recent trips and summaries
+- Real-time collaboration
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🚧 Work in Progress
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+I am actively working on this project to add more functionality and polish:
+
+- Google Pay integration for settling up
+- Push notifications for new expenses or settlements
+- State management with **GetX** for better performance and scalability
+- UI improvements and optimization
+
+Stay tuned for updates!
+
+
+
+---
