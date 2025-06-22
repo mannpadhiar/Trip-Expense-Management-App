@@ -25,9 +25,9 @@ I am actively working on this project to add more functionality and polish:
 Stay tuned for updates!
 
 
-| Recent Trips | Join Trip |Create Trip |
-|-----------|---------------|-------------|
-| ![Recent Trips](screenshot/04_recent_trips.png) | ![Join Trip](screenshot/01_join_trip.png) | ![Create Trip](screenshot/05_create_trip.png) |
+| Recent Trips | Join Trip                                 |Create Trip |
+|-----------|-------------------------------------------|-------------|
+| ![Recent Trips](screenshot/04_recent_trips.png) | ![Join Trip](screenshot/06_join_trip.png) | ![Create Trip](screenshot/05_create_trip.png) |
 
 | Expenses List                                     | Settlements | 
 |---------------------------------------------------|-------------|
